@@ -10,15 +10,12 @@ from transformers import CLIPProcessor, CLIPModel
 model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
 
-
-from happymimi_recognition_msgs2.srv import Clip
 import rclpy
 from rclpy.node import Node
 import cv2
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
-from happymimi_msgs.srv import SetStr, SetStrResponse
-from happymimi_recognition_msgs.srv import Clip, ClipResponse
+from happymimi_recognition_msgs2.srv import Clip, ClipResponse
 
 class Person_extract(object):
     
