@@ -13,14 +13,14 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='tk',
-    maintainer_email='takuchanpp@gmail.com',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    maintainer='mimi_orin',
+    maintainer_email='c1103809@planet.kanazawa-it.ac.jp',
+    description='Estimate the 3D position of an object',
+    license='Apache License 2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'recognition_opencv_publisher = recognition_processing.recognition_opencv_publisher:main'
+          'recognition_opencv_publisher = recognition_processing.recognition_opencv_publisher:main'
         ],
     },
 )

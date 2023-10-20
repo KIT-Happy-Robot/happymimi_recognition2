@@ -15,11 +15,12 @@ setup(
     zip_safe=True,
     maintainer='mimi_orin',
     maintainer_email='mimi_orin@todo.todo',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    description='TODO: Package for extracting human features',
+    license='Apache License 2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'clip_service = person_feature_extraction.gpt2_exam_realsense:main'
         ],
     },
 )
