@@ -1,2 +1,0 @@
-string target_name
-happymimi_msgs2/StrInt sort_option

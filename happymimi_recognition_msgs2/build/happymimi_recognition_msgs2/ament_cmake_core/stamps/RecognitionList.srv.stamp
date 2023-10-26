@@ -1,4 +1,0 @@
-string target_name
-string sort_option
----
-string[] object_list
