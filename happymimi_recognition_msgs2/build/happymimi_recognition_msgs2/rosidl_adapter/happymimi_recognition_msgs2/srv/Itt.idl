@@ -1,0 +1,15 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from happymimi_recognition_msgs2/srv/Itt.srv
+// generated code does not contain a copyright notice
+
+
+module happymimi_recognition_msgs2 {
+  module srv {
+    struct Itt_Request {
+      uint8 structure_needs_at_least_one_member;
+    };
+    struct Itt_Response {
+      string result;
+    };
+  };
+};

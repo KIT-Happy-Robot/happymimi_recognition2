@@ -1,0 +1,15 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from happymimi_recognition_msgs2/srv/RecognitionCount.srv
+// generated code does not contain a copyright notice
+
+
+module happymimi_recognition_msgs2 {
+  module srv {
+    struct RecognitionCount_Request {
+      string target_name;
+    };
+    struct RecognitionCount_Response {
+      int64 num;
+    };
+  };
+};

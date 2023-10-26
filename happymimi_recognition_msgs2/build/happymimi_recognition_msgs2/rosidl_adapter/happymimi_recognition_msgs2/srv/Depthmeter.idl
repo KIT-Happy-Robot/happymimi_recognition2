@@ -1,0 +1,15 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from happymimi_recognition_msgs2/srv/Depthmeter.srv
+// generated code does not contain a copyright notice
+
+
+module happymimi_recognition_msgs2 {
+  module srv {
+    struct Depthmeter_Request {
+      float meter;
+    };
+    struct Depthmeter_Response {
+      string ans;
+    };
+  };
+};

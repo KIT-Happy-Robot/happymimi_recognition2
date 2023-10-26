@@ -1,0 +1,144 @@
+[0.045s] Invoking command in '/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/tk/ros2_ws/install/enter_room_ros2:/opt/ros/humble /usr/bin/cmake /home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2 -DCMAKE_INSTALL_PREFIX=/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/install/happymimi_recognition_msgs2
+[0.159s] -- The C compiler identification is GNU 11.4.0
+[0.234s] -- The CXX compiler identification is GNU 11.4.0
+[0.241s] -- Detecting C compiler ABI info
+[0.286s] -- Detecting C compiler ABI info - done
+[0.291s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.291s] -- Detecting C compile features
+[0.291s] -- Detecting C compile features - done
+[0.294s] -- Detecting CXX compiler ABI info
+[0.343s] -- Detecting CXX compiler ABI info - done
+[0.348s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.348s] -- Detecting CXX compile features
+[0.348s] -- Detecting CXX compile features - done
+[0.354s] -- Found ament_cmake: 1.3.5 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.464s] -- Found Python3: /usr/bin/python3.10 (found version "3.10.12") found components: Interpreter 
+[0.537s] -- Found geometry_msgs: 4.2.3 (/opt/ros/humble/share/geometry_msgs/cmake)
+[0.571s] -- Found rosidl_generator_c: 3.1.5 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+[0.576s] -- Found rosidl_adapter: 3.1.5 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.585s] -- Found rosidl_generator_cpp: 3.1.5 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[0.599s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.615s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.696s] -- Found rosidl_default_generators: 1.2.0 (/opt/ros/humble/share/rosidl_default_generators/cmake)
+[0.703s] -- Found happymimi_msgs_ros2: 0.0.0 (/home/tk/ros2_ws/install/happymimi_msgs_ros2/share/happymimi_msgs_ros2/cmake)
+[0.715s] -- Found action_msgs: 1.2.1 (/opt/ros/humble/share/action_msgs/cmake)
+[0.997s] -- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)
+[1.279s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.389s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.405s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.10.12", minimum required is "3.6") 
+[1.406s] -- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+[1.424s] -- Found PythonLibs: /usr/lib/x86_64-linux-gnu/libpython3.10.so (found suitable version "3.10.12", minimum required is "3.5") 
+[1.424s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[1.424s] -- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10
+[1.424s] -- Using PYTHON_LIBRARIES: /usr/lib/x86_64-linux-gnu/libpython3.10.so
+[1.439s] -- Found PythonExtra: .so  
+[1.487s] -- Found ament_lint_auto: 0.12.8 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[1.508s] -- Added test 'copyright' to check source files copyright and LICENSE
+[1.512s] -- Added test 'cppcheck' to perform static code analysis on C / C++ code
+[1.513s] -- Configured cppcheck include dirs: $<BUILD_INTERFACE:/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_generator_c>;$<BUILD_INTERFACE:/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_typesupport_fastrtps_c>;$<BUILD_INTERFACE:/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_generator_cpp>;$<BUILD_INTERFACE:/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_typesupport_fastrtps_cpp>;$<BUILD_INTERFACE:/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_typesupport_introspection_c>;$<BUILD_INTERFACE:/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_typesupport_introspection_cpp>;/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_generator_c;/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_generator_py
+[1.513s] -- Configured cppcheck exclude dirs and/or files: 
+[1.516s] -- Added test 'cpplint' to check C / C++ code against the Google style
+[1.516s] -- Configured cpplint exclude dirs and/or files: 
+[1.517s] -- Added test 'flake8' to check Python code syntax and style conventions
+[1.518s] -- Added test 'lint_cmake' to check CMake code style
+[1.519s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[1.523s] -- Added test 'uncrustify' to check C / C++ code style
+[1.523s] -- Configured uncrustify additional arguments: 
+[1.524s] -- Added test 'xmllint' to check XML markup files
+[1.526s] -- Configuring done
+[1.562s] -- Generating done
+[1.564s] -- Build files have been written to: /home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2
+[1.571s] Invoked command in '/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/tk/ros2_ws/install/enter_room_ros2:/opt/ros/humble /usr/bin/cmake /home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2 -DCMAKE_INSTALL_PREFIX=/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/install/happymimi_recognition_msgs2
+[1.573s] Invoking command in '/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/tk/ros2_ws/install/enter_room_ros2:/opt/ros/humble /usr/bin/cmake --build /home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2 -- -j8 -l8
+[1.598s] [  1%] [34m[1mGenerating C code for ROS interfaces[0m
+[1.604s] [  1%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[1.608s] [  1%] Built target ament_cmake_python_copy_happymimi_recognition_msgs2
+[1.774s] running egg_info
+[1.774s] creating happymimi_recognition_msgs2.egg-info
+[1.774s] writing happymimi_recognition_msgs2.egg-info/PKG-INFO
+[1.774s] writing dependency_links to happymimi_recognition_msgs2.egg-info/dependency_links.txt
+[1.774s] writing top-level names to happymimi_recognition_msgs2.egg-info/top_level.txt
+[1.775s] writing manifest file 'happymimi_recognition_msgs2.egg-info/SOURCES.txt'
+[1.777s] reading manifest file 'happymimi_recognition_msgs2.egg-info/SOURCES.txt'
+[1.777s] writing manifest file 'happymimi_recognition_msgs2.egg-info/SOURCES.txt'
+[1.795s] [  1%] Built target ament_cmake_python_build_happymimi_recognition_msgs2_egg
+[2.345s] [  1%] Built target happymimi_recognition_msgs2__cpp
+[2.352s] [  4%] [34m[1mGenerating C++ type support for eProsima Fast-RTPS[0m
+[2.352s] [  4%] [34m[1mGenerating C++ introspection for ROS interfaces[0m
+[2.353s] [  4%] [34m[1mGenerating C++ type support dispatch for ROS interfaces[0m
+[2.437s] [  7%] [32mBuilding C object CMakeFiles/happymimi_recognition_msgs2__rosidl_generator_c.dir/rosidl_generator_c/happymimi_recognition_msgs2/srv/detail/depthmeter__functions.c.o[0m
+[2.437s] [  7%] [32mBuilding C object CMakeFiles/happymimi_recognition_msgs2__rosidl_generator_c.dir/rosidl_generator_c/happymimi_recognition_msgs2/srv/detail/clip__functions.c.o[0m
+[2.437s] [  7%] [32mBuilding C object CMakeFiles/happymimi_recognition_msgs2__rosidl_generator_c.dir/rosidl_generator_c/happymimi_recognition_msgs2/srv/detail/itt__functions.c.o[0m
+[2.437s] [  8%] [32mBuilding C object CMakeFiles/happymimi_recognition_msgs2__rosidl_generator_c.dir/rosidl_generator_c/happymimi_recognition_msgs2/srv/detail/multiple_localize__functions.c.o[0m
+[2.437s] [  9%] [32mBuilding C object CMakeFiles/happymimi_recognition_msgs2__rosidl_generator_c.dir/rosidl_generator_c/happymimi_recognition_msgs2/srv/detail/position_estimator__functions.c.o[0m
+[2.515s] [ 12%] [32mBuilding C object CMakeFiles/happymimi_recognition_msgs2__rosidl_generator_c.dir/rosidl_generator_c/happymimi_recognition_msgs2/srv/detail/recognition_count__functions.c.o[0m
+[2.515s] [ 12%] [32mBuilding C object CMakeFiles/happymimi_recognition_msgs2__rosidl_generator_c.dir/rosidl_generator_c/happymimi_recognition_msgs2/srv/detail/recognition_find__functions.c.o[0m
+[2.515s] [ 12%] [32mBuilding C object CMakeFiles/happymimi_recognition_msgs2__rosidl_generator_c.dir/rosidl_generator_c/happymimi_recognition_msgs2/srv/detail/recognition_list__functions.c.o[0m
+[2.515s] [ 13%] [32mBuilding C object CMakeFiles/happymimi_recognition_msgs2__rosidl_generator_c.dir/rosidl_generator_c/happymimi_recognition_msgs2/srv/detail/recognition_localize__functions.c.o[0m
+[2.515s] [ 14%] [32mBuilding C object CMakeFiles/happymimi_recognition_msgs2__rosidl_generator_c.dir/rosidl_generator_c/happymimi_recognition_msgs2/action/detail/recognition_processing__functions.c.o[0m
+[2.531s] In file included from [01m[K/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_generator_c/happymimi_recognition_msgs2/srv/detail/recognition_localize__functions.h:19[m[K,
+[2.532s]                  from [01m[K/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_generator_c/happymimi_recognition_msgs2/srv/detail/recognition_localize__functions.c:4[m[K:
+[2.532s] [01m[K/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_generator_c/happymimi_recognition_msgs2/srv/detail/recognition_localize__struct.h:24:10:[m[K [01;31m[Kfatal error: [m[Khappymimi_msgs2/msg/detail/str_int__struct.h: No such file or directory
+[2.532s]    24 | #include [01;31m[K"happymimi_msgs2/msg/detail/str_int__struct.h"[m[K
+[2.532s]       |          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[2.532s] compilation terminated.
+[2.532s] gmake[2]: *** [CMakeFiles/happymimi_recognition_msgs2__rosidl_generator_c.dir/build.make:434: CMakeFiles/happymimi_recognition_msgs2__rosidl_generator_c.dir/rosidl_generator_c/happymimi_recognition_msgs2/srv/detail/recognition_localize__functions.c.o] Error 1
+[2.532s] gmake[2]: *** Waiting for unfinished jobs....
+[2.620s] gmake[1]: *** [CMakeFiles/Makefile2:213: CMakeFiles/happymimi_recognition_msgs2__rosidl_generator_c.dir/all] Error 2
+[2.620s] gmake[1]: *** Waiting for unfinished jobs....
+[2.859s] [ 17%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/happymimi_recognition_msgs2/srv/itt__type_support.cpp.o[0m
+[2.859s] [ 18%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/happymimi_recognition_msgs2/srv/position_estimator__type_support.cpp.o[0m
+[2.859s] [ 18%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/happymimi_recognition_msgs2/srv/clip__type_support.cpp.o[0m
+[2.859s] [ 19%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/happymimi_recognition_msgs2/srv/multiple_localize__type_support.cpp.o[0m
+[2.860s] [ 20%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/happymimi_recognition_msgs2/srv/recognition_count__type_support.cpp.o[0m
+[2.860s] [ 17%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/happymimi_recognition_msgs2/srv/depthmeter__type_support.cpp.o[0m
+[3.181s] [ 22%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/happymimi_recognition_msgs2/srv/recognition_find__type_support.cpp.o[0m
+[3.181s] [ 22%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/happymimi_recognition_msgs2/srv/recognition_list__type_support.cpp.o[0m
+[3.181s] [ 23%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/happymimi_recognition_msgs2/srv/recognition_localize__type_support.cpp.o[0m
+[3.182s] [ 24%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/happymimi_recognition_msgs2/action/recognition_processing__type_support.cpp.o[0m
+[3.211s] [ 27%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/happymimi_recognition_msgs2/srv/detail/depthmeter__type_support.cpp.o[0m
+[3.211s] [ 27%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/happymimi_recognition_msgs2/srv/detail/itt__type_support.cpp.o[0m
+[3.211s] [ 27%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/happymimi_recognition_msgs2/srv/detail/clip__type_support.cpp.o[0m
+[3.248s] In file included from [01m[K/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_typesupport_cpp/happymimi_recognition_msgs2/srv/recognition_localize__type_support.cpp:7[m[K:
+[3.248s] [01m[K/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_generator_cpp/happymimi_recognition_msgs2/srv/detail/recognition_localize__struct.hpp:20:10:[m[K [01;31m[Kfatal error: [m[Khappymimi_msgs2/msg/detail/str_int__struct.hpp: No such file or directory
+[3.248s]    20 | #include [01;31m[K"happymimi_msgs2/msg/detail/str_int__struct.hpp"[m[K
+[3.248s]       |          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[3.248s] compilation terminated.
+[3.249s] gmake[2]: *** [CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_cpp.dir/build.make:307: CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/happymimi_recognition_msgs2/srv/recognition_localize__type_support.cpp.o] Error 1
+[3.249s] gmake[2]: *** Waiting for unfinished jobs....
+[3.267s] [ 28%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/happymimi_recognition_msgs2/srv/detail/multiple_localize__type_support.cpp.o[0m
+[3.448s] [ 29%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/happymimi_recognition_msgs2/srv/detail/dds_fastrtps/clip__type_support.cpp.o[0m
+[3.466s] [ 30%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/happymimi_recognition_msgs2/srv/detail/dds_fastrtps/depthmeter__type_support.cpp.o[0m
+[3.477s] [ 30%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/happymimi_recognition_msgs2/srv/detail/dds_fastrtps/itt__type_support.cpp.o[0m
+[3.633s] [ 31%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/happymimi_recognition_msgs2/srv/detail/position_estimator__type_support.cpp.o[0m
+[3.637s] [ 32%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/happymimi_recognition_msgs2/srv/detail/recognition_count__type_support.cpp.o[0m
+[3.639s] [ 33%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/happymimi_recognition_msgs2/srv/detail/recognition_find__type_support.cpp.o[0m
+[3.688s] gmake[1]: *** [CMakeFiles/Makefile2:395: CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_cpp.dir/all] Error 2
+[3.695s] [ 34%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/happymimi_recognition_msgs2/srv/detail/recognition_list__type_support.cpp.o[0m
+[3.733s] [ 35%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/happymimi_recognition_msgs2/srv/detail/recognition_localize__type_support.cpp.o[0m
+[3.811s] In file included from [01m[K/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_typesupport_introspection_cpp/happymimi_recognition_msgs2/srv/detail/recognition_localize__type_support.cpp:12[m[K:
+[3.811s] [01m[K/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_generator_cpp/happymimi_recognition_msgs2/srv/detail/recognition_localize__struct.hpp:20:10:[m[K [01;31m[Kfatal error: [m[Khappymimi_msgs2/msg/detail/str_int__struct.hpp: No such file or directory
+[3.811s]    20 | #include [01;31m[K"happymimi_msgs2/msg/detail/str_int__struct.hpp"[m[K
+[3.811s]       |          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[3.811s] compilation terminated.
+[3.818s] gmake[2]: *** [CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_introspection_cpp.dir/build.make:339: CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/happymimi_recognition_msgs2/srv/detail/recognition_localize__type_support.cpp.o] Error 1
+[3.819s] gmake[2]: *** Waiting for unfinished jobs....
+[3.827s] [ 36%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/happymimi_recognition_msgs2/srv/detail/dds_fastrtps/multiple_localize__type_support.cpp.o[0m
+[3.912s] [ 37%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/happymimi_recognition_msgs2/srv/detail/dds_fastrtps/position_estimator__type_support.cpp.o[0m
+[3.912s] [ 38%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/happymimi_recognition_msgs2/srv/detail/dds_fastrtps/recognition_count__type_support.cpp.o[0m
+[3.932s] [ 39%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/happymimi_recognition_msgs2/srv/detail/dds_fastrtps/recognition_find__type_support.cpp.o[0m
+[4.056s] [ 40%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/happymimi_recognition_msgs2/srv/detail/dds_fastrtps/recognition_list__type_support.cpp.o[0m
+[4.058s] [ 41%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/happymimi_recognition_msgs2/srv/detail/dds_fastrtps/recognition_localize__type_support.cpp.o[0m
+[4.072s] [ 42%] [32mBuilding CXX object CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/happymimi_recognition_msgs2/action/detail/dds_fastrtps/recognition_processing__type_support.cpp.o[0m
+[4.126s] In file included from [01m[K/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_typesupport_fastrtps_cpp/happymimi_recognition_msgs2/srv/detail/recognition_localize__rosidl_typesupport_fastrtps_cpp.hpp:11[m[K,
+[4.126s]                  from [01m[K/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_typesupport_fastrtps_cpp/happymimi_recognition_msgs2/srv/detail/dds_fastrtps/recognition_localize__type_support.cpp:4[m[K:
+[4.126s] [01m[K/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2/rosidl_generator_cpp/happymimi_recognition_msgs2/srv/detail/recognition_localize__struct.hpp:20:10:[m[K [01;31m[Kfatal error: [m[Khappymimi_msgs2/msg/detail/str_int__struct.hpp: No such file or directory
+[4.126s]    20 | #include [01;31m[K"happymimi_msgs2/msg/detail/str_int__struct.hpp"[m[K
+[4.126s]       |          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[4.126s] compilation terminated.
+[4.127s] gmake[2]: *** [CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_fastrtps_cpp.dir/build.make:339: CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/happymimi_recognition_msgs2/srv/detail/dds_fastrtps/recognition_localize__type_support.cpp.o] Error 1
+[4.127s] gmake[2]: *** Waiting for unfinished jobs....
+[4.136s] gmake[1]: *** [CMakeFiles/Makefile2:369: CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_introspection_cpp.dir/all] Error 2
+[4.503s] gmake[1]: *** [CMakeFiles/Makefile2:291: CMakeFiles/happymimi_recognition_msgs2__rosidl_typesupport_fastrtps_cpp.dir/all] Error 2
+[4.503s] gmake: *** [Makefile:146: all] Error 2
+[4.505s] Invoked command in '/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/tk/ros2_ws/install/enter_room_ros2:/opt/ros/humble /usr/bin/cmake --build /home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2/build/happymimi_recognition_msgs2 -- -j8 -l8

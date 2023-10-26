@@ -1,0 +1,15 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from happymimi_recognition_msgs2/srv/Clip.srv
+// generated code does not contain a copyright notice
+
+
+module happymimi_recognition_msgs2 {
+  module srv {
+    struct Clip_Request {
+      string data;
+    };
+    struct Clip_Response {
+      string result;
+    };
+  };
+};

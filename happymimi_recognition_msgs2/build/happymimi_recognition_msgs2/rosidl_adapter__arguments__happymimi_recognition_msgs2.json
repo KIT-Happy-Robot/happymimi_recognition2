@@ -1,0 +1,15 @@
+{
+  "package_name": "happymimi_recognition_msgs2",
+  "non_idl_tuples": [
+    "/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2:srv/Clip.srv",
+    "/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2:srv/Depthmeter.srv",
+    "/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2:srv/Itt.srv",
+    "/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2:srv/MultipleLocalize.srv",
+    "/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2:srv/PositionEstimator.srv",
+    "/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2:srv/RecognitionCount.srv",
+    "/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2:srv/RecognitionFind.srv",
+    "/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2:srv/RecognitionList.srv",
+    "/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2:srv/RecognitionLocalize.srv",
+    "/home/tk/ros2_ws/src/happymimi_recognition2/happymimi_recognition_msgs2:action/RecognitionProcessing.action"
+  ]
+}
