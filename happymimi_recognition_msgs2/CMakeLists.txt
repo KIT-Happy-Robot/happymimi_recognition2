@@ -9,7 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
-find_package(happymimi_msgs2 REQUIRED)
+find_package(happymimi_msgs_ros2 REQUIRED)
 find_package(action_msgs REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
@@ -25,10 +25,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/RecognitionList.srv"
   "srv/RecognitionLocalize.srv"
   "action/RecognitionProcessing.action"
-  DEPENDENCIES geometry_msgs happymimi_msgs2 action_msgs
-  
-
-  
+  DEPENDENCIES geometry_msgs happymimi_msgs_ros2 action_msgs  
 )
 ament_export_dependencies(rosidl_default_runtime)
 
