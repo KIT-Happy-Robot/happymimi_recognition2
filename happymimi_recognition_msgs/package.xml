@@ -8,6 +8,11 @@
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+<<<<<<< HEAD:happymimi_recognition_msgs/package.xml
+=======
+  <depend>geometry_msgs</depend>
+  <depend>happymimi_msgs_ros2</depend>
+>>>>>>> 8a722c30535bfaf7d0e91a63e942e67aa5d1133a:happymimi_recognition_msgs2/package.xml
   <buildtool_depend>rosidl_default_generators</buildtool_depend>
   <exec_depend>rosidl_default_runtime</exec_depend>
   <member_of_group>rosidl_interface_packages</member_of_group>

@@ -1,6 +1,10 @@
 # Define the goal
 string target_name
+<<<<<<< HEAD:happymimi_recognition_msgs/action/RecognitionProcessing.action
 happymimi_msgs/StrInt sort_option
+=======
+happymimi_msgs_ros2/StrInt sort_option
+>>>>>>> 8a722c30535bfaf7d0e91a63e942e67aa5d1133a:happymimi_recognition_msgs2/action/RecognitionProcessing.action
 ---
 # Define the result
 bool result_flg

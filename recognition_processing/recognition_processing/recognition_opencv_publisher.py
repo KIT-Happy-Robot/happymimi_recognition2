@@ -8,7 +8,7 @@ $ ros2 run usb_cam usb_cam_node_exe
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
-from sensor_msgs.msg import Image
+from sensor_packagepackagemsgs.msg import Image
 # OpenCVのモジュールをインポート
 from cv_bridge import CvBridge
 import cv2 # OpenCVのライブラリをインポート
