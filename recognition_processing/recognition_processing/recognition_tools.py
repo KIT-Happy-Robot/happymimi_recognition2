@@ -38,8 +38,7 @@ from base_control import BaseControl
 
 class CallDetector(object):
     def __init__(self):
-        #ROS1
-        #self.detect_depth = rospy.ServiceProxy('/detect/depth', PositionEstimator)
+        
         self.detect_depth = self.create_client(PositionEstimator, '/detect/depth')
         self.object_centroid = Point()
         
@@ -61,19 +60,10 @@ class RecognitionTools(object):
     bbox = []
 
     def __init__(self):
-        """
-        #ROS1
-        rospy.Subscriber('/darknet_ros/bounding_boxes',BoundingBoxes,self.boundingBoxCB)
-        rospy.Subscriber('/camera/color/image_raw', Image, self.realsenseCB)
-        rospy.Service('/recognition/save',StrTrg,self.saveImage)
-        rospy.Service('/recognition/list',RecognitionList,self.listObject)
-        rospy.Service('/recognition/find',RecognitionFind,self.findObject)
-        rospy.Service('/recognition/count',RecognitionCount,self.countObject)
-        rospy.Service('/recognition/localize',RecognitionLocalize,self.localizeObject)
-        rospy.Service('/recognition/multiple_localize',MultipleLocalize,self.multipleLocalize)
-        """
+        
         self.create_subscription(Detection2DArray, '/detection_result',self.boundingBoxCB,1)
         self.create_subscription(Image, '/camera/color/image_raw',self.realsenseCB,1)
+        
         self.create_service(StrTrg, '/recognition/save', self.saveImage)
         self.create_service(RecognitionList, '/recognition/list', self.listObject)
         self.create_service(RecognitionFind, '/recognition/find', self.findObject)
@@ -84,12 +74,12 @@ class RecognitionTools(object):
         self.realsense_image = Image()
         self.image_height = 480# rosparam.get_param('/camera/realsense2_camera/color_height')
         self.image_width = 640# rosparam.get_param('/camera/realsense2_camera/color_width')
-        #try:
+        try:
             #ROS1
             #self.object_dict = rosparam.get_param('/object_dict')
-        self.object_dict = self.get_parameter('/object_dict').get_parameter_value()
-        #except rosgraph.masterapi.MasterError:
-        #    self.object_dict = {'any':['cup', 'bottle']}
+            self.object_dict = self.get_parameter('/object_dict').get_parameter_value()
+        except AttributeError:
+            self.object_dict = {'any':['cup', 'bottle']}
 
         self.update_time = 0 # darknetからpublishされた時刻を記録
         self.update_flg = False # darknetからpublishされたかどうかの確認
@@ -100,7 +90,7 @@ class RecognitionTools(object):
     def boundingBoxCB(self,bb):
         self.update_time = time.time()
         self.update_flg = True
-        RecognitionTools.bbox = bb.bounding_boxes
+        RecognitionTools.bbox = bb.detections
 
     def initializeBbox(self, event):
         # darknetが何も認識していない時にRecognitionTools.bboxを初期化する
@@ -111,8 +101,8 @@ class RecognitionTools(object):
 
     def createBboxList(self,bb):
         bbox_list = []
-        for i in range(len(bb)):
-            bbox_list.append(bb[i].Class)
+        for i in range(len(bb.detections.results)):
+            bbox_list.append(bb.detections.results[i].hypothesis.class_id)
         return bbox_list
 
     def realsenseCB(self, image):
@@ -125,14 +115,14 @@ class RecognitionTools(object):
 
         bridge = CvBridge()
         cv2_image = bridge.imgmsg_to_cv2(self.realsense_image, desired_encoding="bgr8")
-
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        for i, name in enumerate(bbox_list):
-            cv2.rectangle(cv2_image,(bb[i].xmin,bb[i].ymin),(bb[i].xmax,bb[i].ymax),(0,255,0),2)
-            pix_y = bb[i].ymin-5
-            if pix_y<10: pix_y=10
-            cv2.putText(cv2_image, name, (bb[i].xmin,pix_y),font,0.5,(0,0,0))
-        cv2.imwrite(req.data+"/"+str(time.time())+".png",cv2_image)
+        
+        #font = cv2.FONT_HERSHEY_SIMPLEX
+        #for i, name in enumerate(bbox_list):
+        #    cv2.rectangle(cv2_image,(bb[i].xmin,bb[i].ymin),(bb[i].xmax,bb[i].ymax),(0,255,0),2)
+        #    pix_y = bb[i].ymin-5
+        #    if pix_y<10: pix_y=10
+        #    cv2.putText(cv2_image, name, (bb[i].xmin,pix_y),font,0.5,(0,0,0))
+        #cv2.imwrite(req.data+"/"+str(time.time())+".png",cv2_image)
         return True
 
     def listObject(self, request, bb=None, internal_call=False):
@@ -153,7 +143,7 @@ class RecognitionTools(object):
                 if not(bbox_list[i] in self.object_dict['any']): continue
             elif object_name != '':
                 if not(bbox_list[i] == object_name): continue
-            coordinate_list.append([bbox_list[i], [int((bb[i].ymin + bb[i].ymax)/2), int((bb[i].xmin + bb[i].xmax)/2)]])
+            coordinate_list.append([bbox_list[i], [int(bb.bbox.center.position.y), int(bb.bbox.center.position.x)]])
 
         # ソート
         if sort_option == 'left':
@@ -254,6 +244,7 @@ class RecognitionTools(object):
         sort_option = request.sort_option
         if bb is None:
             bb = RecognitionTools.bbox
+            
         bbox_list = self.createBboxList(bb)
 
         exist_flg = bool(self.countObject(RecognitionCountRequest(object_name), bb=bb).num)
