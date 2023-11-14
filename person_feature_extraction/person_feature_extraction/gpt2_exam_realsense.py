@@ -15,23 +15,22 @@ from rclpy.node import Node
 import cv2
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
-from happymimi_recognition_msgs2.srv import Clip, ClipResponse
+from happymimi_recognition_msgs2.srv import Clip
 
-class Person_extract(object):
-    
-    
-    def __init__(self) -> None:
+class Person_extract(Node):
+    def __init__(self):
         
         self.SELFNODE = "person_extract"
         super().__init__(self.SELFNODE)
         #rospy.Service('/person_feature/gpt', SetStr, self.main)
         #rospy.Service('/person_feature/gpt', Clip, self.main)
-        self.srv = self.create_service(Clip, '/person_feature/gpt', self.main)
-        self.sub = self.create_subscription(Image, "/camera/color/image_raw", self.realsenseCB)
+        self.srv = self.create_service(Clip, '/person_feature/gpt', self.main_extract)
+        self.sub = self.create_subscription(Image, "/camera/camera/color/image_raw", self.realsenseCB,1)
         #rospy.Subscriber('/camera/color/image_raw', Image, self.realsenseCB)
         
         self.bridge = CvBridge()
-
+        
+        print("READY SERVER")
         self.label_cloth_color = ["person wearing white clothes", "person wearing red clothes",
                                   "person wearing blue clothes","person wearing black clothes",
                                   "person wearing glay clothes","person wearing brown clothes",
@@ -150,10 +149,9 @@ class Person_extract(object):
     
         return self.label_age[predicted_class_idx]
     
-    def main(self, request):
+    def main_extract(self, request, response):
         #response = SetStrResponse()
         data = request.data
-        response = ClipResponse()
         if data == "gender":response.result = str(self.extract_gender())
         elif data == "glass":response.result = str(self.extract_glass())
         elif data == "cloth" :response.result = str(self.extract_cloth_color())
@@ -167,15 +165,17 @@ class Person_extract(object):
         
         return response
     
-
-if __name__ == '__main__':
+def main(args=None):
     try:
         rclpy.init(args=None)
-        person_extract = Person_extract()
-        rclpy.spin(person_extract)
+        person_extraction = Person_extract()
+        rclpy.spin(person_extraction)
     except KeyboardInterrupt:
         pass
     finally:
         # 終了処理
-        person_extract.destroy_node()
+        #person_extraction.destroy_node()
         rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
