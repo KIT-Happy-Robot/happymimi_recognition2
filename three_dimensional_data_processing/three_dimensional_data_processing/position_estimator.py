@@ -16,25 +16,28 @@ class ThreeDimensionalPositionEstimator(Node):
 
     def __init__(self):
         super().__init__('three_dimensional_position_estimator')
-        self.neck_height = 0.0
-        self.depth_image = None
+        #self.neck_height = 0.0
         self.head_angle = 0.0
 
         self.realsense_subscription = self.create_subscription(
-            Image, '/camera/aligned_depth_to_color/image_raw', self.realsense_callback, 1)
-        self.motor_angle_subscription = self.create_subscription(
-            Float64MultiArray, '/servo/angle_list', self.motor_angle_callback, 1)
+            Image, '/camera/camera/aligned_depth_to_color/image_raw', self.realsense_callback,1)
+        #self.motor_angle_subscription = self.create_subscription(
+        #    Float64MultiArray, '/servo/angle_list', self.motor_angle_callback, 1)
         self.estimate_service = self.create_service(
             PositionEstimator, '/detect/depth', self.estimate_callback)
 
-        self.get_parameter("mimi_specification.Ground_Neck_Height", self.neck_height)
+        #self.get_parameter("mimi_specification.Ground_Neck_Height", self.neck_height)
+        self.neck_height = 20
+        
+        print("READY TO SERVER")
 
     def realsense_callback(self, ros_image):
         self.depth_image = ros_image
 
     def motor_angle_callback(self, angle_list):
-        self.head_angle = angle_list.data[5]
-
+        #self.head_angle = angle_list.data[5]
+        self.head_angle = 20.0
+        
     def convert_image(self, input_image):
         try:
             bridge = cv_bridge.CvBridge()
@@ -48,7 +51,7 @@ class ThreeDimensionalPositionEstimator(Node):
         object_point = Point()
         current_depth_image = self.depth_image
 
-        cv_image = self.convert_image(current_depth_image)
+        cv_image = self.convert_image(self.depth_image)
 
         if cv_image is None:
             response.point.x = float('nan')
@@ -67,6 +70,11 @@ class ThreeDimensionalPositionEstimator(Node):
         centroid_z = distance * math.tan(theta_z)
         self.get_logger().info('x: %f, y: %f' % (centroid_x, centroid_z))
 
+        #main
+        #centroid_x = (centroid_x * math.cos(math.pi * self.head_angle / 180)) - (centroid_z * math.sin(math.pi * self.head_angle / 180))
+        #centroid_z = (centroid_z * math.cos(math.pi * self.head_angle / 180)) + (distance * math.sin(math.pi * self.head_angle / 180))
+        
+        #debug
         centroid_x = (centroid_x * math.cos(math.pi * self.head_angle / 180)) - (centroid_z * math.sin(math.pi * self.head_angle / 180))
         centroid_z = (centroid_z * math.cos(math.pi * self.head_angle / 180)) + (distance * math.sin(math.pi * self.head_angle / 180))
         self.get_logger().info('%f, %f' % (centroid_x, centroid_z))

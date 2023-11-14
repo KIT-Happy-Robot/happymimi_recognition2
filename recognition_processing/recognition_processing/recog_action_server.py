@@ -38,7 +38,13 @@ class Recognition_Action_Server(object):
         self.c_l_count_out = 0
         self.move_count_out = 0
         self.base_control = BaseControl()
-
+        
+        self.action_sever = ActionServer(
+            self,
+            RecognitionProcessingAction,
+            'recognition',
+            self.execute_callback
+        )
         
     def action_Sever(self):
         self.get_logger().info('Executing state: Server')
