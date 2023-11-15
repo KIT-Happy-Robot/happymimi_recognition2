@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'position_estimator_dev = three_dimensional_data_processing.position_estimation_dev:main',
             'position_estimator = three_dimensional_data_processing.position_estimator:main'
         ],
     },
