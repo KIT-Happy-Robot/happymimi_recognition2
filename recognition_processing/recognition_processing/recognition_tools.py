@@ -31,12 +31,12 @@ from happymimi_recognition_msgs.srv import (RecognitionList,
                                             PositionEstimator, )
 
 #新しくパッケージを作成したら要修正
-teleop_path = get_package_share_directory('happymimi_teleop')
-sys.path.insert(0, os.path.join(teleop_path, 'src/'))
-from base_control import BaseControl
+#teleop_path = get_package_share_directory('happymimi_teleop')
+#sys.path.insert(0, os.path.join(teleop_path, 'src/'))
+#from base_control import BaseControl
 
 
-class CallDetector(object):
+class CallDetector(Node):
     def __init__(self):
         
         self.detect_depth = self.create_client(PositionEstimator, '/detect/depth')
@@ -56,10 +56,11 @@ class CallDetector(object):
         self.object_centroid = res.point
 
 
-class RecognitionTools(object):
+class RecognitionTools(Node):
     bbox = []
 
     def __init__(self):
+        super().__init__('recognition_tools')
         
         self.create_subscription(Detection2DArray, '/detection_result',self.boundingBoxCB,1)
         self.create_subscription(Image, 'camera/camera/color/image_raw',self.realsenseCB,1)
@@ -67,7 +68,7 @@ class RecognitionTools(object):
         self.create_service(StrTrg, '/recognition/save', self.saveImage)
         self.create_service(RecognitionList, '/recognition/list', self.listObject)
         self.create_service(RecognitionFind, '/recognition/find', self.findObject)
-        self.create_service(RecognitionCount, '/recognition/find', self.countObject)
+        self.create_service(RecognitionCount, '/recognition/count', self.countObject)
         self.create_service(RecognitionLocalize, '/recognition/localize',self.localizeObject)
         self.create_service(MultipleLocalize,'/recognition/multiple', self.multipleLocalize)
         
@@ -77,7 +78,8 @@ class RecognitionTools(object):
         try:
             #ROS1
             #self.object_dict = rosparam.get_param('/object_dict')
-            self.object_dict = self.get_parameter('/object_dict').get_parameter_value()
+            #self.object_dict = self.get_parameter('/object_dict').get_parameter_value()
+            self.object_dict = {'any':['cup', 'bottle']}
         except AttributeError:
             self.object_dict = {'any':['cup', 'bottle']}
 
@@ -86,13 +88,14 @@ class RecognitionTools(object):
 
         #rospy.Timer(rospy.Duration(0.5), self.initializeBbox)
         self.create_timer(0.5, self.initializeBbox)
+        print("READY SERVER")
         
-    def boundingBoxCB(self,bb):
+    def boundingBoxCB(self, bb):
         self.update_time = time.time()
         self.update_flg = True
         RecognitionTools.bbox = bb.detections
 
-    def initializeBbox(self, event):
+    def initializeBbox(self):
         # darknetが何も認識していない時にRecognitionTools.bboxを初期化する
         if time.time() - self.update_time > 1.0 and self.update_flg:
             RecognitionTools.bbox = []
@@ -182,7 +185,7 @@ class RecognitionTools(object):
             response_list.object_list = [row[0] for row in response_list.object_list]
         return response_list
 
-    def countObject(self, request, bb=None):
+    def countObject(self, request, response,bb=None):
         self.get_logger().info('module type : Count')
 
         response_count = RecognitionCount.Response()
@@ -202,10 +205,10 @@ class RecognitionTools(object):
         response_count.num = object_count
         return response_count
 
-    def findObject(self, request):
+    def findObject(self, request, response):
         self.get_logger().info('module type : Find')
 
-        base_control = BaseControl()
+        #base_control = BaseControl()
 
         response_flg = RecognitionFind.Response()
         object_name = request.target_name
@@ -215,10 +218,11 @@ class RecognitionTools(object):
 
         while not find_flg and loop_count <= 3 and not rclpy.shutdown():
             loop_count += 1
-
-            rotation_angle = 30 - (((loop_count)%4)/2) * 60
-            base_control.rotateAngle(rotation_angle, 0.5)
-            time.sleep(3.0)
+            
+            #Debug
+            #rotation_angle = 30 - (((loop_count)%4)/2) * 60
+            #base_control.rotateAngle(rotation_angle, 0.5)
+            #time.sleep(3.0)
 
             bbox_list = self.createBboxList(RecognitionTools.bbox)
             if object_name == '':
@@ -230,7 +234,7 @@ class RecognitionTools(object):
         response_flg.result = find_flg
         return response_flg
 
-    def localizeObject(self, request, bb=None):
+    def localizeObject(self, request, response,bb=None):
         self.get_logger().info('module type : Localize')
 
         Detector = CallDetector()
@@ -269,7 +273,7 @@ class RecognitionTools(object):
         response_centroid.point = Detector.object_centroid
         return response_centroid
 
-    def multipleLocalize(self, request, bb=None):
+    def multipleLocalize(self, request, response, bb=None):
         self.get_logger().info('module type : AddvancedLocalize')
 
         response_centroid = MultipleLocalize.Response()
@@ -302,7 +306,7 @@ def main(args=None):
     except KeyboardInterrupt:
         pass
     finally:
-        recognition_tools.destroy_node()
+        #recognition_tools.destroy_node()
         rclpy.shutdown()
 
 
