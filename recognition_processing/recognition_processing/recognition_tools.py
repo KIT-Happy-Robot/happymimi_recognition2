@@ -23,12 +23,12 @@ from ament_index_python.packages import get_package_share_directory
 from vision_msgs.msg import Detection2D, Detection2DArray, ObjectHypothesisWithPose
 
 from happymimi_msgs.srv import StrTrg
-from happymimi_recognition_msgs.srv import (RecognitionList, RecognitionListRequest, RecognitionListResponse,
-                                            RecognitionCount, RecognitionCountRequest, RecognitionCountResponse,
-                                            RecognitionFind, RecognitionFindRequest, RecognitionFindResponse,
-                                            RecognitionLocalize, RecognitionLocalizeRequest, RecognitionLocalizeResponse,
-                                            MultipleLocalize, MultipleLocalizeRequest, MultipleLocalizeResponse,
-                                            PositionEstimator, PositionEstimatorRequest)
+from happymimi_recognition_msgs.srv import (RecognitionList, 
+                                            RecognitionCount,                                             
+                                            RecognitionFind, 
+                                            RecognitionLocalize, 
+                                            MultipleLocalize, 
+                                            PositionEstimator, )
 
 #新しくパッケージを作成したら要修正
 teleop_path = get_package_share_directory('happymimi_teleop')
@@ -48,7 +48,7 @@ class CallDetector(object):
             self.get_logger().info('service not available, waiting again...')
         ## リクエスト定義
         #self.req = PositionEstimator.Request()
-        position_estimator_req = PositionEstimatorRequest()
+        position_estimator_req = PositionEstimator.Request()
         position_estimator_req.center_x = int(center_x)
         position_estimator_req.center_y = int(center_y)
         print(position_estimator_req.center_x, position_estimator_req.center_y)
@@ -62,7 +62,7 @@ class RecognitionTools(object):
     def __init__(self):
         
         self.create_subscription(Detection2DArray, '/detection_result',self.boundingBoxCB,1)
-        self.create_subscription(Image, '/camera/color/image_raw',self.realsenseCB,1)
+        self.create_subscription(Image, 'camera/camera/color/image_raw',self.realsenseCB,1)
         
         self.create_service(StrTrg, '/recognition/save', self.saveImage)
         self.create_service(RecognitionList, '/recognition/list', self.listObject)
@@ -128,7 +128,7 @@ class RecognitionTools(object):
     def listObject(self, request, bb=None, internal_call=False):
         self.get_logger().info('module type : List')
 
-        response_list = RecognitionListResponse()
+        response_list = RecognitionList.Response()
         coordinate_list = []
 
         object_name = request.target_name
@@ -159,12 +159,12 @@ class RecognitionTools(object):
         elif sort_option == 'front':
             name_list = set([row[0] for row in coordinate_list])
 
-            localize_req = RecognitionLocalizeRequest()
+            localize_req = RecognitionLocalize.Request()
             localize_req.sort_option.data = 'left'
             depth_list = []
 
             for name in name_list:
-                loop_count = self.countObject(RecognitionCountRequest(name), bb=bb).num
+                loop_count = self.countObject(RecognitionCount.Request(name), bb=bb).num
                 localize_req.target_name = name
                 for i in range(loop_count):
                     localize_req.sort_option.num = i
@@ -185,7 +185,7 @@ class RecognitionTools(object):
     def countObject(self, request, bb=None):
         self.get_logger().info('module type : Count')
 
-        response_count = RecognitionCountResponse()
+        response_count = RecognitionCount.Response()
         object_count = 0
 
         object_name = request.target_name
@@ -207,11 +207,11 @@ class RecognitionTools(object):
 
         base_control = BaseControl()
 
-        response_flg = RecognitionFindResponse()
+        response_flg = RecognitionFind.Response()
         object_name = request.target_name
         loop_count = 0
 
-        find_flg = bool(self.countObject(RecognitionCountRequest(object_name)).num)
+        find_flg = bool(self.countObject(RecognitionCount.Request(object_name)).num)
 
         while not find_flg and loop_count <= 3 and not rclpy.shutdown():
             loop_count += 1
@@ -235,7 +235,7 @@ class RecognitionTools(object):
 
         Detector = CallDetector()
 
-        response_centroid = RecognitionLocalizeResponse()
+        response_centroid = RecognitionLocalize.Response()
         response_centroid.point.x = numpy.nan
         response_centroid.point.y = numpy.nan
         response_centroid.point.z = numpy.nan
@@ -247,14 +247,14 @@ class RecognitionTools(object):
             
         bbox_list = self.createBboxList(bb)
 
-        exist_flg = bool(self.countObject(RecognitionCountRequest(object_name), bb=bb).num)
+        exist_flg = bool(self.countObject(RecognitionCount.Request(object_name), bb=bb).num)
 
         # 対象の物体が存在しない場合
         if not exist_flg:
             return response_centroid
 
         # リストの取得
-        list_req = RecognitionListRequest()
+        list_req = RecognitionList.Request()
         list_req.target_name = object_name
         list_req.sort_option = sort_option.data
         object_list = self.listObject(request=list_req, bb=RecognitionTools.bbox, internal_call=True).object_list
@@ -272,7 +272,7 @@ class RecognitionTools(object):
     def multipleLocalize(self, request, bb=None):
         self.get_logger().info('module type : AddvancedLocalize')
 
-        response_centroid = MultipleLocalizeResponse()
+        response_centroid = MultipleLocalize.Response()
 
         object_name = request.target_name
         if bb is None:
@@ -280,7 +280,7 @@ class RecognitionTools(object):
         bbox_list = self.createBboxList(bb)
 
         # リストの取得
-        list_req = RecognitionListRequest()
+        list_req = RecognitionList.Request()
         list_req.target_name = object_name
         list_req.sort_option = 'front'
         object_list = self.listObject(request=list_req, bb=RecognitionTools.bbox, internal_call=True).object_list

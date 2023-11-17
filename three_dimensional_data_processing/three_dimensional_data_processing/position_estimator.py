@@ -26,7 +26,7 @@ class ThreeDimensionalPositionEstimator(Node):
         self.estimate_service = self.create_service(
             PositionEstimator, '/detect/depth', self.estimate_callback)
 
-        self.get_parameter("mimi_specification.Ground_Neck_Height", self.neck_height)
+        #self.get_parameter("mimi_specification.Ground_Neck_Height", self.neck_height)
         self.neck_height = 20
         
         print("READY TO SERVER")
