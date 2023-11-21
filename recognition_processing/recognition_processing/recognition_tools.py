@@ -93,7 +93,7 @@ class RecognitionTools(Node):
     def boundingBoxCB(self, bb):
         self.update_time = time.time()
         self.update_flg = True
-        RecognitionTools.bbox = bb.detections
+        RecognitionTools.bbox = bb
 
     def initializeBbox(self):
         # darknetが何も認識していない時にRecognitionTools.bboxを初期化する
@@ -104,8 +104,10 @@ class RecognitionTools(Node):
 
     def createBboxList(self,bb):
         bbox_list = []
-        for i in range(len(bb.detections.results)):
-            bbox_list.append(bb.detections.results[i].hypothesis.class_id)
+        for i in bb.detections:
+            for j in range(len(i.results)):
+                obj = i.results[j].hypothesis.class_id
+                bbox_list.append(obj)
         return bbox_list
 
     def realsenseCB(self, image):
@@ -128,7 +130,7 @@ class RecognitionTools(Node):
         #cv2.imwrite(req.data+"/"+str(time.time())+".png",cv2_image)
         return True
 
-    def listObject(self, request, bb=None, internal_call=False):
+    def listObject(self, request, response, bb=None, internal_call=False):
         self.get_logger().info('module type : List')
 
         response_list = RecognitionList.Response()
@@ -138,6 +140,8 @@ class RecognitionTools(Node):
         sort_option = request.sort_option
         if bb is None:
             bb = RecognitionTools.bbox
+            
+        #print(bb)
         bbox_list = self.createBboxList(bb)
 
         # 座標を格納したlistを作成
@@ -146,7 +150,7 @@ class RecognitionTools(Node):
                 if not(bbox_list[i] in self.object_dict['any']): continue
             elif object_name != '':
                 if not(bbox_list[i] == object_name): continue
-            coordinate_list.append([bbox_list[i], [int(bb.bbox.center.position.y), int(bb.bbox.center.position.x)]])
+            coordinate_list.append([bbox_list[i], [int(bb.detections[i].bbox.center.position.y), int(bb.detections[i].bbox.center.position.x)]])
 
         # ソート
         if sort_option == 'left':
@@ -178,7 +182,7 @@ class RecognitionTools(Node):
         try:
             response_list.object_list = depth_list
         except NameError:
-            response_list.object_list = coordinate_list
+            response_list.object_list = str(coordinate_list)
 
         # serverの呼び出し
         if not internal_call:
