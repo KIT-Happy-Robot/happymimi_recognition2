@@ -38,7 +38,7 @@ from happymimi_recognition_msgs.srv import (RecognitionList,
 
 class CallDetector(Node):
     def __init__(self):
-        
+        super().__init__('call_detector')
         self.detect_depth = self.create_client(PositionEstimator, '/detect/depth')
         self.object_centroid = Point()
         
@@ -151,7 +151,11 @@ class RecognitionTools(Node):
             elif object_name != '':
                 if not(bbox_list[i] == object_name): continue
             coordinate_list.append([bbox_list[i], [int(bb.detections[i].bbox.center.position.y), int(bb.detections[i].bbox.center.position.x)]])
-
+        
+        localize_req = RecognitionLocalize.Request()
+        localize_req.sort_option.data = 'left'
+        depth_list = []
+        
         # ソート
         if sort_option == 'left':
             coordinate_list.sort(key=lambda x: x[1][1])
@@ -166,30 +170,36 @@ class RecognitionTools(Node):
         elif sort_option == 'front':
             name_list = set([row[0] for row in coordinate_list])
 
-            localize_req = RecognitionLocalize.Request()
-            localize_req.sort_option.data = 'left'
-            depth_list = []
-
+            #localize_req = RecognitionLocalize.Request()
+            #localize_req.sort_option.data = 'left'
+            #depth_list = []
+            #print(name_list)
             for name in name_list:
-                loop_count = self.countObject(RecognitionCount.Request(name), bb=bb).num
+                count = RecognitionCount.Request(target_name=name)
+                loop_count = self.countObject(count, bb=bb).num
+                #print("loop_count:",loop_count)
                 localize_req.target_name = name
                 for i in range(loop_count):
                     localize_req.sort_option.num = i
                     centroid = self.localizeObject(localize_req, bb=bb).point
                     depth_list.append([name, centroid])
             depth_list.sort(key=lambda x: x[1].x)
-
-        try:
+            
+        if not depth_list:
+            response_list.object_list.append(str(coordinate_list))
+        else:
             response_list.object_list = depth_list
-        except NameError:
-            response_list.object_list = str(coordinate_list)
+        #try:
+        #    response_list.object_list = depth_list
+        #except UnboundLocalError:
+        #    response_list.object_list = str(coordinate_list[0])
 
         # serverの呼び出し
         if not internal_call:
             response_list.object_list = [row[0] for row in response_list.object_list]
         return response_list
 
-    def countObject(self, request, response,bb=None):
+    def countObject(self, request, response, bb=None):
         self.get_logger().info('module type : Count')
 
         response_count = RecognitionCount.Response()
@@ -198,6 +208,7 @@ class RecognitionTools(Node):
         object_name = request.target_name
         if bb is None:
             bb = RecognitionTools.bbox
+            
         bbox_list = self.createBboxList(bb)
 
         if object_name == 'any':
@@ -217,8 +228,8 @@ class RecognitionTools(Node):
         response_flg = RecognitionFind.Response()
         object_name = request.target_name
         loop_count = 0
-
-        find_flg = bool(self.countObject(RecognitionCount.Request(object_name)).num)
+        count = RecognitionCount.Request(target_name=object_name)
+        find_flg = bool(self.countObject(count, response=None,bb=None).num)
 
         while not find_flg and loop_count <= 3 and not rclpy.shutdown():
             loop_count += 1
@@ -254,8 +265,8 @@ class RecognitionTools(Node):
             bb = RecognitionTools.bbox
             
         bbox_list = self.createBboxList(bb)
-
-        exist_flg = bool(self.countObject(RecognitionCount.Request(object_name), bb=bb).num)
+        count = RecognitionCount.Request(target_name=object_name)
+        exist_flg = bool(self.countObject(count, response=None,bb=bb).num)
 
         # 対象の物体が存在しない場合
         if not exist_flg:
@@ -265,7 +276,8 @@ class RecognitionTools(Node):
         list_req = RecognitionList.Request()
         list_req.target_name = object_name
         list_req.sort_option = sort_option.data
-        object_list = self.listObject(request=list_req, bb=RecognitionTools.bbox, internal_call=True).object_list
+        object_list = self.listObject(request=list_req, response=None,bb=RecognitionTools.bbox, internal_call=True).object_list
+        print(object_list)
         try:
             center_x, center_y = object_list[sort_option.num][1]
         except IndexError:
