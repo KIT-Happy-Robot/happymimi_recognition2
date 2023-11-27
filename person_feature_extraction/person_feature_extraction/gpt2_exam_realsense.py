@@ -8,7 +8,7 @@ import requests
 #from transformers import CLIPProcessor, CLIPModel
 import torch
 import clip
-
+import numpy as np
 #モデルの読み込み
 #model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
 #processor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
@@ -24,6 +24,8 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 from happymimi_recognition_msgs2.srv import Clip
 
+
+
 class Person_extract(Node):
     def __init__(self):
         
@@ -32,7 +34,7 @@ class Person_extract(Node):
         #rospy.Service('/person_feature/gpt', SetStr, self.main)
         #rospy.Service('/person_feature/gpt', Clip, self.main)
         self.srv = self.create_service(Clip, '/person_feature/gpt', self.main_extract)
-        self.sub = self.create_subscription(Image, "/camera/camera/color/image_raw", self.realsenseCB,1)
+        self.sub = self.create_subscription(Image, "/image_raw", self.realsenseCB,1)
         #rospy.Subscriber('/camera/color/image_raw', Image, self.realsenseCB)
         
         self.bridge = CvBridge()
@@ -68,7 +70,10 @@ class Person_extract(Node):
     def extract_gender(self):
         #試験的に性別を判断する
         image_data = self.bridge.imgmsg_to_cv2(self.image_res)
-        image = preprocess(Image.open(image_data)).unsqueeze(0).to(device)
+        image_pil = PImage.fromarray(image_data)
+        image_pil = image_pil.convert('RGB')
+        
+        image = preprocess(image_pil).unsqueeze(0).to(device)
         
         text = clip.tokenize(self.label_gender).to(device)
         with torch.no_grad():
@@ -78,10 +83,14 @@ class Person_extract(Node):
             logits_per_image, logits_per_text = model(image, text)
             probs = logits_per_image.softmax(dim=-1).cpu().numpy()
             
+            result = self.label_gender[np.argmax(probs)]
+            
         print("--------------------------------------------")
+        print("result:",result)
         print("Label probs:", probs)
+        print()
         
-        return probs
+        return result
     """
     def extract_glass(self):
         image = self.bridge.imgmsg_to_cv2(self.image_res)
