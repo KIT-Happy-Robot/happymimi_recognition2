@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'clip_service = person_feature_extraction.gpt2_exam_realsense:main'
+            'clip_service = person_feature_extraction.gpt2_exam_realsense:main',
+            'itt_service = person_feature_extraction.image_to_text:main' 
         ],
     },
 )
