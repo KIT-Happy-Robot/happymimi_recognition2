@@ -40,22 +40,19 @@ class CallDetector(Node):
     def __init__(self):
         super().__init__('call_detector')
         self.detect_depth = self.create_client(PositionEstimator, '/detect/depth')
-        self.object_centroid = Point()
+        #self.object_centroid = Point()
         
 
     def detectorService(self, center_x, center_y):
         while not self.detect_depth.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
         ## リクエスト定義
-        position_estimator_req = PositionEstimator.Request()
-        position_estimator_req.center_x = int(center_x)
-        position_estimator_req.center_y = int(center_y)
-        #print(position_estimator_req.center_x, position_estimator_req.center_y)
-        res = self.detect_depth.call_async(position_estimator_req)
-        #rclpy.spin_until_future_complete(self, res)
-        #res = self.detect_depth(position_estimator_req)
-        self.object_centroid = res.result()
-        print(self.object_centroid)
+        self.position_estimator_req = PositionEstimator.Request()
+        self.position_estimator_req.center_x = int(center_x)
+        self.position_estimator_req.center_y = int(center_y)
+        print("center_x, center_y",self.position_estimator_req.center_x, self.position_estimator_req.center_y)
+        self.res = self.detect_depth.call_async(self.position_estimator_req)
+        
 
 
 class RecognitionTools(Node):
@@ -184,7 +181,7 @@ class RecognitionTools(Node):
             print("depth_list",depth_list)
             response_list.object_list = depth_list
         except UnboundLocalError:
-            print(coordinate_list)
+            print("coordinate_list",coordinate_list)
             for i in range(len(coordinate_list)):
                 response_list.object_list.append(coordinate_list[i])
         # serverの呼び出し
@@ -280,7 +277,8 @@ class RecognitionTools(Node):
         # 三次元位置の推定
         time.sleep(0.5)
         Detector.detectorService(center_x, center_y)
-        response_centroid.point = Detector.object_centroid
+        service_response = Detector.res.result()
+        response_centroid.point = service_response.point
         return response_centroid
 
     def multipleLocalize(self, request, response, bb=None):
@@ -312,7 +310,15 @@ def main(args=None):
     try:
         rclpy.init(args=args)
         recognition_tools = RecognitionTools()
-        rclpy.spin(recognition_tools)
+        client = CallDetector()
+        client.detectorService(207,644)
+        response = client.res.result
+        attributes = dir(response) 
+        for attribute in attributes:
+            print(attribute)
+
+        client.get_logger().info(response.x)
+        #rclpy.spin(client)
     except KeyboardInterrupt:
         pass
     finally:

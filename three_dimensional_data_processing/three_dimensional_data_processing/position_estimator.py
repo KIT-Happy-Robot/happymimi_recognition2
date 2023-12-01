@@ -68,7 +68,7 @@ class ThreeDimensionalPositionEstimator(Node):
         centroid_x = distance
         centroid_y = -1 * distance * math.tan(theta_y)
         centroid_z = distance * math.tan(theta_z)
-        self.get_logger().info('x: %f, y: %f' % (centroid_x, centroid_z))
+        self.get_logger().info('x: %f, y: %f' % (centroid_x, centroid_y))
 
         #main
         #centroid_x = (centroid_x * math.cos(math.pi * self.head_angle / 180)) - (centroid_z * math.sin(math.pi * self.head_angle / 180))
