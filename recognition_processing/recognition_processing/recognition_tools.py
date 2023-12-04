@@ -40,7 +40,7 @@ class CallDetector(Node):
     def __init__(self):
         super().__init__('call_detector')
         self.detect_depth = self.create_client(PositionEstimator, '/detect/depth')
-        #self.object_centroid = Point()
+        self.object_centroid = Point()
         
 
     def detectorService(self, center_x, center_y):
@@ -50,8 +50,10 @@ class CallDetector(Node):
         self.position_estimator_req = PositionEstimator.Request()
         self.position_estimator_req.center_x = int(center_x)
         self.position_estimator_req.center_y = int(center_y)
-        print("center_x, center_y",self.position_estimator_req.center_x, self.position_estimator_req.center_y)
+        #print("center_x, center_y",self.position_estimator_req.center_x, self.position_estimator_req.center_y)
         self.res = self.detect_depth.call_async(self.position_estimator_req)
+        rclpy.spin_until_future_complete(self,self.res)
+        self.object_centroid = self.res.result()
         
 
 
@@ -178,16 +180,16 @@ class RecognitionTools(Node):
             depth_list.sort(key=lambda x: x[1].x)
             
         try:
-            print("depth_list",depth_list)
-            response_list.object_list = depth_list
+            for mini_list in depth_list:
+                response_list.object_list.append(mini_list)
         except UnboundLocalError:
-            print("coordinate_list",coordinate_list)
             for i in range(len(coordinate_list)):
                 response_list.object_list.append(coordinate_list[i])
+        
         # serverの呼び出し
         if not internal_call:
             response_list.object_list = [row[0] for row in response_list.object_list]
-            print("internal_object_list:",response_list.object_list)
+            #print("internal_object_list:",response_list.object_list)
         return response_list
 
     def countObject(self, request, response, bb=None):
@@ -268,7 +270,7 @@ class RecognitionTools(Node):
         list_req.target_name = object_name
         list_req.sort_option = sort_option.data
         object_list = self.listObject(request=list_req, response=None,bb=RecognitionTools.bbox, internal_call=True).object_list
-        print("object_list:",object_list)
+        #print("object_list:",object_list)
         try:
             center_x, center_y = object_list[sort_option.num][1]
         except IndexError:
@@ -277,7 +279,7 @@ class RecognitionTools(Node):
         # 三次元位置の推定
         time.sleep(0.5)
         Detector.detectorService(center_x, center_y)
-        service_response = Detector.res.result()
+        service_response = Detector.object_centroid
         response_centroid.point = service_response.point
         return response_centroid
 
@@ -296,10 +298,9 @@ class RecognitionTools(Node):
         list_req.target_name = object_name
         list_req.sort_option = 'front'
         object_list = self.listObject(request=list_req, response=None, bb=RecognitionTools.bbox, internal_call=True).object_list
-        
         #response_centroid.points = [row[1] for row in object_list if not(row[1].x is numpy.nan)]
         response_list = []
-        for row in object_list:
+        for row in list(object_list):
             if not(row[1].x is numpy.nan) and row[1].x > 0.1:
                 response_list.append(row[1])
         response_centroid.points = response_list
@@ -310,15 +311,7 @@ def main(args=None):
     try:
         rclpy.init(args=args)
         recognition_tools = RecognitionTools()
-        client = CallDetector()
-        client.detectorService(207,644)
-        response = client.res.result
-        attributes = dir(response) 
-        for attribute in attributes:
-            print(attribute)
-
-        client.get_logger().info(response.x)
-        #rclpy.spin(client)
+        rclpy.spin(recognition_tools)
     except KeyboardInterrupt:
         pass
     finally:
