@@ -8,7 +8,7 @@ import rclpy
 from rclpy.node import Node
 import numpy as np
 import time
-from happymimi_recognition_msgs.srv import Depthmeter
+from happymimi_recognition_msgs2.srv import Depthmeter
 
 
 class ImageMask(Node):
