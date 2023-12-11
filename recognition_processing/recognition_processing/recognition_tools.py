@@ -44,16 +44,17 @@ class CallDetector(Node):
         
 
     def detectorService(self, center_x, center_y):
-        while not self.cli.wait_for_service(timeout_sec=1.0):
+        while not self.detect_depth.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
         ## リクエスト定義
         #self.req = PositionEstimator.Request()
-        position_estimator_req = PositionEstimator.Request()
-        position_estimator_req.center_x = int(center_x)
-        position_estimator_req.center_y = int(center_y)
-        print(position_estimator_req.center_x, position_estimator_req.center_y)
-        res = self.detect_depth(position_estimator_req)
-        self.object_centroid = res.point
+        self.position_estimator_req = PositionEstimator.Request()
+        self.position_estimator_req.center_x = int(center_x)
+        self.position_estimator_req.center_y = int(center_y)
+        #print(position_estimator_req.center_x, position_estimator_req.center_y)
+        self.res = self.detect_depth.call_async(self.position_estimator_req)
+        rclpy.spin_until_future_complete(self, self.res)
+        self.object_centroid = self.res.result()
 
 
 class RecognitionTools(Node):
@@ -88,7 +89,7 @@ class RecognitionTools(Node):
 
         #rospy.Timer(rospy.Duration(0.5), self.initializeBbox)
         self.create_timer(0.5, self.initializeBbox)
-        print("READY SERVER")
+        print("READY TO SERVER")
         
     def boundingBoxCB(self, bb):
         self.update_time = time.time()
@@ -170,9 +171,9 @@ class RecognitionTools(Node):
         elif sort_option == 'front':
             name_list = set([row[0] for row in coordinate_list])
 
-            #localize_req = RecognitionLocalize.Request()
-            #localize_req.sort_option.data = 'left'
-            #depth_list = []
+            localize_req = RecognitionLocalize.Request()
+            localize_req.sort_option.data = 'left'
+            depth_list = []
             #print(name_list)
             for name in name_list:
                 count = RecognitionCount.Request(target_name=name)
@@ -185,14 +186,16 @@ class RecognitionTools(Node):
                     depth_list.append([name, centroid])
             depth_list.sort(key=lambda x: x[1].x)
             
-        if not depth_list:
-            response_list.object_list.append(str(coordinate_list))
-        else:
-            response_list.object_list = depth_list
-        #try:
+        #if not depth_list:
+        #    response_list.object_list.append(str(coordinate_list))
+        #else:
         #    response_list.object_list = depth_list
-        #except UnboundLocalError:
-        #    response_list.object_list = str(coordinate_list[0])
+        try:
+            for mini_list in name_list:
+                response_list.object_list.append(mini_list)
+        except UnboundLocalError:
+            for i in range(len(coordinate_list)):
+                response_list.object_list.append(coordinate_list[i])
 
         # serverの呼び出し
         if not internal_call:
@@ -277,7 +280,7 @@ class RecognitionTools(Node):
         list_req.target_name = object_name
         list_req.sort_option = sort_option.data
         object_list = self.listObject(request=list_req, response=None,bb=RecognitionTools.bbox, internal_call=True).object_list
-        print(object_list)
+        print(object_list[sort_option.num][1])
         try:
             center_x, center_y = object_list[sort_option.num][1]
         except IndexError:
@@ -286,7 +289,8 @@ class RecognitionTools(Node):
         # 三次元位置の推定
         time.sleep(0.5)
         Detector.detectorService(center_x, center_y)
-        response_centroid.point = Detector.object_centroid
+        service_response = Detector.object_centroid
+        response_centroid.point = service_response.point
         return response_centroid
 
     def multipleLocalize(self, request, response, bb=None):
