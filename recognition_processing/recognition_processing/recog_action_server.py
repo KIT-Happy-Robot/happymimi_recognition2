@@ -12,36 +12,44 @@ import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionServer
 
-from geometry_msgs import Twist, Point
+from geometry_msgs.msg import Twist, Point
 from ament_index_python import get_package_share_directory
 
-from vision_msgs import Detection2D, Detection2DArray, ObjectHypothesisWithPose
+from vision_msgs.msg import Detection2D, Detection2DArray, ObjectHypothesisWithPose
 from happymimi_msgs.msg import StrInt
-from happymimi_recognition_msgs2.msg import RecognitionProcessingAction, RecognitionProcessingResult
-from happymimi_recognition_msgs2.srv import RecognitionCountRequest, RecognitionFindRequest, RecognitionLocalizeRequest
+from happymimi_recognition_msgs2.action import RecognitionProcessing
+from happymimi_recognition_msgs2.srv import RecognitionCount, RecognitionFind, RecognitionLocalize
 
+tools_path = "/home/mimi_orin/main_ws/src/happymimi_recognition2/recognition_processing"
+sys.path.insert(0, os.path.join(tools_path, 'recognition_processing/'))
 from recognition_tools import RecognitionTools
-teleop_path = get_package_share_directory( 'happymimi_teleop')
-sys.path.insert(0, os.path.join(teleop_path, 'src/'))
-from base_control import BaseControl
+#新しくパッケージ修正したら要修正
+#teleop_path = get_package_share_directory('happymimi_teleop')
+#sys.path.insert(0, os.path.join(teleop_path, 'src/'))
+#from base_control import BaseControl
 
 
 
-class Recognition_Action_Server(object):
-    def __init__(self, target_name_dict, sort_option) -> None:
+class Recognition_Action_Server(Node):
+    def __init__(self):
         super().__init__('action_server_node')
         
-        self.target_name = target_name_dict
-        self.sort_option = sort_option
-        self.result_out = RecognitionProcessingResult(result_flg=False, centroid_point=Point())
+        #-------実験用にここは決め打ち---------#
+        self.target_name = "cup"
+        self.sort_option = "left"
+        #----------------------------------#
+        
+        self.result_out = RecognitionProcessing.Result(result_flg=False, centroid_point=Point())
         self.e_l_count_out = 0
         self.c_l_count_out = 0
         self.move_count_out = 0
-        self.base_control = BaseControl()
         
+        #-----実験用にコメントアウト---------#
+        #self.base_control = BaseControl()
+        #--------------------------------#
         self.action_sever = ActionServer(
             self,
-            RecognitionProcessingAction,
+            RecognitionProcessing,
             'recognition',
             self.execute_callback
         )
@@ -56,7 +64,8 @@ class Recognition_Action_Server(object):
         
         bbox = Recognition_Tools.bbox
         self.bbox_out = bbox #!!!
-        object_count = Recognition_Tools.countObject(RecognitionCountRequest(self.target_name), bbox).num
+        count_request = RecognitionCount.Request(self.target_name)
+        object_count = Recognition_Tools.countObject(request=count_request, response=None,bb=bbox).num
         exist_flg = object_count > 0
         
         if (self.sort_option.num + 1) > object_count:
@@ -72,8 +81,9 @@ class Recognition_Action_Server(object):
         
     def find_execute(self):
         self.get_logger().info('Executing state: Find')
-
-        find_flg = Recognition_Tools.findObject(RecognitionFindRequest(self.target_name)).result
+        
+        find_request = RecognitionFind.Request(self.target_name)
+        find_flg = Recognition_Tools.findObject(request=find_request,response=None).result
 
         if find_flg:
             return 'find_success'
@@ -84,10 +94,10 @@ class Recognition_Action_Server(object):
     def local_execute(self):
         self.get_logger().info('Executing state: Localize')
 
-        localize_request = RecognitionLocalizeRequest()
+        localize_request = RecognitionLocalize.Request()
         localize_request.target_name = self.target_name
         localize_request.sort_option = self.sort_option
-        object_centroid = Recognition_Tools.localizeObject(localize_request).point
+        object_centroid = Recognition_Tools.localizeObject(request=localize_request,response=None).point
         self.centroid_out = object_centroid #--!!!!
 
         if not math.isnan(object_centroid.x):
@@ -104,7 +114,7 @@ class Recognition_Action_Server(object):
         self.sort_option = reset_option
 
         if abs(object_angle) < 1:
-            self.result_out = RecognitionProcessingResult(result_flg=True, centroid_point=self.centroid)
+            self.result_out = RecognitionProcessing.Result(result_flg=True, centroid_point=self.centroid)
             return 'check_center_success'
         elif self.c_l_count > 3:
             return 'action_failed'
@@ -123,22 +133,26 @@ class Recognition_Action_Server(object):
         time.sleep(1.0)
         self.move_count_out = self.move_count_in + 1
         return 'retry'
-
+    
+    def execute_callback(self):
+        print("Start action")
 
 def main():
-    global Recognition_Tools
-    Recognition_Tools = RecognitionTools()
-    
-    rclpy.init()
-    node = Node('recognition_action_server')
-    
-    rclpy.spin(node)
+    try:
+        rclpy.init(args=None)
+        global Recognition_Tools
+        Recognition_Tools = RecognitionTools()
+        RAS = Recognition_Action_Server()
+        rclpy.spin(RAS)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        rclpy.shutdown()
 
-    node.destroy_node()
-    rclpy.shutdown()
+    #node.destroy_node()
+    #rclpy.shutdown()
     
-    RAS = Recognition_Action_Server()
+    
     
 if __name__ == '__main__':
-    
     main()

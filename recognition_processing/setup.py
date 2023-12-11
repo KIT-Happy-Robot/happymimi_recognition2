@@ -23,10 +23,14 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [    
-            #'recognition_opencv_publisher = recognition_processing.recognition_opencv_publisher:main'
             'recognition_tools = recognition_processing.recognition_tools:main',
+<<<<<<< HEAD
             'recog_action_server = recognition_processing.recog_action_server:main' ,
             'recog_action = recognition_processing.transitions_recognition:main'
+=======
+            'recog_action_server = recognition_processing.recog_action_server:main',
+            'recog_depth_mask = recognition_processing.depthMask:main'
+>>>>>>> 031ae82665ff243449f71de500590dcced98cf0c
         ],
     },
 )

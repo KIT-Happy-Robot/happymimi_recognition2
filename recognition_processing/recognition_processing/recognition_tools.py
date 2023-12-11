@@ -47,6 +47,7 @@ class CallDetector(Node):
         while not self.detect_depth.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
         ## リクエスト定義
+<<<<<<< HEAD
         #self.req = PositionEstimator.Request()
         self.position_estimator_req = PositionEstimator.Request()
         self.position_estimator_req.center_x = int(center_x)
@@ -55,6 +56,16 @@ class CallDetector(Node):
         self.res = self.detect_depth.call_async(self.position_estimator_req)
         rclpy.spin_until_future_complete(self, self.res)
         self.object_centroid = self.res.result()
+=======
+        self.position_estimator_req = PositionEstimator.Request()
+        self.position_estimator_req.center_x = int(center_x)
+        self.position_estimator_req.center_y = int(center_y)
+        #print("center_x, center_y",self.position_estimator_req.center_x, self.position_estimator_req.center_y)
+        self.res = self.detect_depth.call_async(self.position_estimator_req)
+        rclpy.spin_until_future_complete(self,self.res)
+        self.object_centroid = self.res.result()
+        
+>>>>>>> 031ae82665ff243449f71de500590dcced98cf0c
 
 
 class RecognitionTools(Node):
@@ -141,8 +152,6 @@ class RecognitionTools(Node):
         sort_option = request.sort_option
         if bb is None:
             bb = RecognitionTools.bbox
-            
-        #print(bb)
         bbox_list = self.createBboxList(bb)
 
         # 座標を格納したlistを作成
@@ -152,11 +161,7 @@ class RecognitionTools(Node):
             elif object_name != '':
                 if not(bbox_list[i] == object_name): continue
             coordinate_list.append([bbox_list[i], [int(bb.detections[i].bbox.center.position.y), int(bb.detections[i].bbox.center.position.x)]])
-        
-        localize_req = RecognitionLocalize.Request()
-        localize_req.sort_option.data = 'left'
-        depth_list = []
-        
+            
         # ソート
         if sort_option == 'left':
             coordinate_list.sort(key=lambda x: x[1][1])
@@ -177,29 +182,38 @@ class RecognitionTools(Node):
             #print(name_list)
             for name in name_list:
                 count = RecognitionCount.Request(target_name=name)
-                loop_count = self.countObject(count, bb=bb).num
-                #print("loop_count:",loop_count)
+                loop_count = self.countObject(count, response=None, bb=bb).num
                 localize_req.target_name = name
                 for i in range(loop_count):
                     localize_req.sort_option.num = i
-                    centroid = self.localizeObject(localize_req, bb=bb).point
+                    centroid = self.localizeObject(localize_req, response=None,bb=bb).point
                     depth_list.append([name, centroid])
             depth_list.sort(key=lambda x: x[1].x)
             
+<<<<<<< HEAD
         #if not depth_list:
         #    response_list.object_list.append(str(coordinate_list))
         #else:
         #    response_list.object_list = depth_list
         try:
             for mini_list in name_list:
+=======
+        try:
+            for mini_list in depth_list:
+>>>>>>> 031ae82665ff243449f71de500590dcced98cf0c
                 response_list.object_list.append(mini_list)
         except UnboundLocalError:
             for i in range(len(coordinate_list)):
                 response_list.object_list.append(coordinate_list[i])
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 031ae82665ff243449f71de500590dcced98cf0c
         # serverの呼び出し
         if not internal_call:
             response_list.object_list = [row[0] for row in response_list.object_list]
+            #print("internal_object_list:",response_list.object_list)
         return response_list
 
     def countObject(self, request, response, bb=None):
@@ -280,7 +294,11 @@ class RecognitionTools(Node):
         list_req.target_name = object_name
         list_req.sort_option = sort_option.data
         object_list = self.listObject(request=list_req, response=None,bb=RecognitionTools.bbox, internal_call=True).object_list
+<<<<<<< HEAD
         print(object_list[sort_option.num][1])
+=======
+        #print("object_list:",object_list)
+>>>>>>> 031ae82665ff243449f71de500590dcced98cf0c
         try:
             center_x, center_y = object_list[sort_option.num][1]
         except IndexError:
@@ -307,11 +325,10 @@ class RecognitionTools(Node):
         list_req = RecognitionList.Request()
         list_req.target_name = object_name
         list_req.sort_option = 'front'
-        object_list = self.listObject(request=list_req, bb=RecognitionTools.bbox, internal_call=True).object_list
-        
+        object_list = self.listObject(request=list_req, response=None, bb=RecognitionTools.bbox, internal_call=True).object_list
         #response_centroid.points = [row[1] for row in object_list if not(row[1].x is numpy.nan)]
         response_list = []
-        for row in object_list:
+        for row in list(object_list):
             if not(row[1].x is numpy.nan) and row[1].x > 0.1:
                 response_list.append(row[1])
         response_centroid.points = response_list
