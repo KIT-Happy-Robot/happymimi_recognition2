@@ -120,32 +120,32 @@ class Recognition_Action_Server(Node):
         if not math.isnan(object_centroid.x):
             return True
         else:
-            self.e_l_count = self.e_l_count + 1
+            self.e_l_count_out = self.e_l_count_out + 1
             return False
         
     def check_center_execute(self, event):
         self.get_logger().info('Executing state: CheckCenter')
 
-        object_angle = math.atan2(self.centroid.y, self.centroid.x)/math.pi*180
+        object_angle = math.atan2(self.centroid_out.y, self.centroid_out.x)/math.pi*180
         reset_option = StrInt(data='center', num=0)
         self.sort_option = reset_option
-
-        if abs(object_angle) < 1:
-            self.result_out = RecognitionProcessing.Result(result_flg=True, centroid_point=self.centroid)
+        print(abs(object_angle)) #!!!
+        if abs(object_angle) < 6: #!!! デバッグ用に6にしている本来は1
+            self.result_out = RecognitionProcessing.Result(result_flg=True, centroid_point=self.centroid_out)
             return True
-        elif self.c_l_count > 3:
-            return 'action_failed'
+        elif self.c_l_count_out > 3:
+            return False #action_failed
         else:
             #if abs(object_angle) < 3.5: object_angle=object_angle/abs(object_angle)*3.5
-            self.base_control.rotateAngle(float(object_angle))
+            #self.base_control.rotateAngle(float(object_angle))
             time.sleep(2.0)
-            self.c_l_count = self.c_l_count + 1
+            self.c_l_count_out = self.c_l_count_out + 1
             return False
         
     def move_execute(self, event):
         self.get_logger().info('Executing state: Move')
 
-        move_range = 0.4*(((self.move_count+1)%4)/2)-0.2
+        move_range = 0.4*(((self.move_count_out+1)%4)/2)-0.2
         self.base_control.translateDist(move_range)
         time.sleep(1.0)
         self.move_count_out = self.move_count_in + 1
@@ -180,8 +180,8 @@ def execute_callback(goal_handle):
             if RAS.state == 'GOAL':
                 break
         
-        filename = 'test.png'
-        RAS.get_graph().draw(filename, prog='dot', format='png')
+        #filename = 'test.png'
+        #RAS.get_graph().draw(filename, prog='dot', format='png')
         goal_handle.succeed()
         return RAS.result_out
     

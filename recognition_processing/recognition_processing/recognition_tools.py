@@ -47,7 +47,6 @@ class CallDetector(Node):
         while not self.detect_depth.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
         ## リクエスト定義
-<<<<<<< HEAD
         #self.req = PositionEstimator.Request()
         self.position_estimator_req = PositionEstimator.Request()
         self.position_estimator_req.center_x = int(center_x)
@@ -56,16 +55,6 @@ class CallDetector(Node):
         self.res = self.detect_depth.call_async(self.position_estimator_req)
         rclpy.spin_until_future_complete(self, self.res)
         self.object_centroid = self.res.result()
-=======
-        self.position_estimator_req = PositionEstimator.Request()
-        self.position_estimator_req.center_x = int(center_x)
-        self.position_estimator_req.center_y = int(center_y)
-        #print("center_x, center_y",self.position_estimator_req.center_x, self.position_estimator_req.center_y)
-        self.res = self.detect_depth.call_async(self.position_estimator_req)
-        rclpy.spin_until_future_complete(self,self.res)
-        self.object_centroid = self.res.result()
-        
->>>>>>> 031ae82665ff243449f71de500590dcced98cf0c
 
 
 class RecognitionTools(Node):
@@ -190,26 +179,16 @@ class RecognitionTools(Node):
                     depth_list.append([name, centroid])
             depth_list.sort(key=lambda x: x[1].x)
             
-<<<<<<< HEAD
         #if not depth_list:
         #    response_list.object_list.append(str(coordinate_list))
         #else:
         #    response_list.object_list = depth_list
         try:
             for mini_list in name_list:
-=======
-        try:
-            for mini_list in depth_list:
->>>>>>> 031ae82665ff243449f71de500590dcced98cf0c
                 response_list.object_list.append(mini_list)
         except UnboundLocalError:
             for i in range(len(coordinate_list)):
                 response_list.object_list.append(coordinate_list[i])
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> 031ae82665ff243449f71de500590dcced98cf0c
         # serverの呼び出し
         if not internal_call:
             response_list.object_list = [row[0] for row in response_list.object_list]
@@ -294,11 +273,7 @@ class RecognitionTools(Node):
         list_req.target_name = object_name
         list_req.sort_option = sort_option.data
         object_list = self.listObject(request=list_req, response=None,bb=RecognitionTools.bbox, internal_call=True).object_list
-<<<<<<< HEAD
         print(object_list[sort_option.num][1])
-=======
-        #print("object_list:",object_list)
->>>>>>> 031ae82665ff243449f71de500590dcced98cf0c
         try:
             center_x, center_y = object_list[sort_option.num][1]
         except IndexError:

@@ -28,6 +28,7 @@ class ThreeDimensionalPositionEstimator(Node):
 
         #self.get_parameter("mimi_specification.Ground_Neck_Height", self.neck_height)
         self.neck_height = 20
+        self.depth_image = None
         
         print("READY TO SERVER")
 
@@ -51,12 +52,12 @@ class ThreeDimensionalPositionEstimator(Node):
         object_point = Point()
         current_depth_image = self.depth_image
 
-        cv_image = self.convert_image(self.depth_image)
-
+        #cv_image = self.convert_image(self.depth_image)
+        cv_image = None
         if cv_image is None:
-            response.point.x = float('nan')
-            response.point.y = float('nan')
-            response.point.z = float('nan')
+            response.point.x = float(100)
+            response.point.y = float(10)
+            response.point.z = float(10)
             return response
 
         distance = cv_image[request.center_x, request.center_y]
