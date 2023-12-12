@@ -51,7 +51,8 @@ class ThreeDimensionalPositionEstimator(Node):
     def estimate_callback(self, request, response):
         object_point = Point()
         current_depth_image = self.depth_image
-
+        
+        #デバッグ用にコメントアウト
         #cv_image = self.convert_image(self.depth_image)
         cv_image = None
         if cv_image is None:
