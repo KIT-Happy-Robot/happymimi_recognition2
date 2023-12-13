@@ -1,4 +1,4 @@
-# happymimi_recognition
+# happymimi_recognition2
 認識処理のプログラムや、それに付随するプログラム関係をまとめたメタパッケージ
 
 ## Description
