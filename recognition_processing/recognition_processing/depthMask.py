@@ -17,9 +17,9 @@ class ImageMask(Node):
         self.bridge = CvBridge()
         self.meter = 2.5
         print("{}[m]".format(self.meter))
-        self.img = self.create_subscription(Image,"/camera/camera_ayu/color/image_raw",self.img_listener,1)
+        self.img = self.create_subscription(Image,"/camera/camera/color/image_raw",self.img_listener,1)
         time.sleep(0.1)
-        self.depth = self.create_subscription(Image,"/camera/camera_ayu/aligned_depth_to_color/image_raw",self.depth_listener,1)
+        self.depth = self.create_subscription(Image,"/camera/camera/aligned_depth_to_color/image_raw",self.depth_listener,1)
         self.pub = self.create_publisher(Image,"camera/color/depth_mask",10)
         self.server = self.create_service(Depthmeter,"depth_mask",self.depth_reception)
 
