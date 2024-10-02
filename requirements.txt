@@ -1,0 +1,6 @@
+# YOLO系
+ultralytics
+
+# APi Server系
+fastapi
+"uvicorn[standard]"
