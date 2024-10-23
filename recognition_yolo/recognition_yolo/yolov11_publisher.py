@@ -74,14 +74,26 @@ class YoloDetector(Node):
                 center_x = int((box[0] + box[2]) / 2)
                 center_y = int((box[1] + box[3]) / 2)
 
-                # numpyを使って範囲を百分割して深度値を取得
-                
-                
-                # 座標が画像の範囲内かチェック
-                if 0 <= center_x < width and 0 <= center_y < height:
-                    # 深度値を取得
-                    depth_value = self.depth_image[center_y, center_x]
-                    depth_meters = depth_value / 1000.0  # mmをmに変換
+                x1 = max(0, int(box[0]))
+                y1 = max(0, int(box[1]))
+                x2 = min(width - 1, int(box[2]))
+                y2 = min(height - 1, int(box[3]))
+
+                lins_x = np.linspace(x1, x2, 5) # 範囲を10分割
+                lins_y = np.linspace(y1, y2, 5)
+
+                min_depth_value = float('inf')  # 初期値を無限大に設定
+
+                for y in lins_y:
+                    for x in lins_x:
+                        y_idx = int(y)
+                        x_idx = int(x)
+                        cv2.circle(output_image,(x_idx,y_idx),5,(255,255,255),-1)
+                        if 0 <= y_idx < height and 0 <= x_idx < width:  # 範囲チェック
+                            depth_value = self.depth_image[y_idx, x_idx]
+                            if depth_value > 0:  # 有効な深度値のみを考慮
+                                min_depth_value = min(min_depth_value, depth_value)
+                    min_depth_value = min_depth_value / 1000.0  # mmをmに変換
                     
                     # バウンディングボックスを描画
                     cv2.rectangle(output_image, 
@@ -93,15 +105,15 @@ class YoloDetector(Node):
                     cv2.circle(output_image, (center_x, center_y), 5, (0, 0, 255), -1)
                     
                     # クラス名、信頼度、距離を表示
-                    label = f"Class:{cls} Conf:{conf:.2f} Depth:{depth_meters:.2f}m"
+                    label = f"Class:{cls} Conf:{conf:.2f} Depth:{min_depth_value:.2f}m"
                     cv2.putText(output_image, label,
                               (int(box[0]), int(box[1] - 10)),
-                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                              cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 1)
                     
                     # ログに出力
                     self.get_logger().info(
                         f'Object detected - Class: {cls}, Position: ({center_x}, {center_y}), '
-                        f'Depth: {depth_meters:.2f}m, Confidence: {conf:.2f}'
+                        f'Depth: {min_depth_value:.2f}m, Confidence: {conf:.2f}'
                     )
 
             # 処理した画像をパブリッシュ
