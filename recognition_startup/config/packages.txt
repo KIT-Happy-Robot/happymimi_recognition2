@@ -1,3 +1,0 @@
-# インストールするパッケージのリスト
-librealsense2-dkms
-librealsense2-utils
