@@ -16,16 +16,14 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='mimi_orin',
-    maintainer_email='c1103809@planet.kanazawa-it.ac.jp',
-    description='Estimate the 3D position of an object',
+    maintainer='mimi',
+    maintainer_email='',
+    description='三次元位置推定のプログラムや挙手判定のプログラム等。雑多なプログラムをまとめたパッケージ',
     license='Apache License 2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [    
-            'recognition_tools = recognition_processing.recognition_tools:main',
-            'recog_action_server = recognition_processing.recog_action_server:main' ,
-            'recog_action = recognition_processing.transitions_recognition:main'
+            'hand_raise_recognition = recognition_processing.hand_raise_recognition.hand_raise_recognition:main'
         ],
     },
 )
