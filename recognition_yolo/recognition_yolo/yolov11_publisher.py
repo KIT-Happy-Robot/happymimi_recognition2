@@ -16,6 +16,22 @@ class YoloDetector(Node):
         self.depth_image = None
         self.color_image = None
         
+        # クラスごとの色を定義
+        self.class_colors = {
+            'person': (0, 0, 255),    # 赤
+            'chair': (0, 255, 0),     # 緑
+            'cup': (255, 0, 0),       # 青
+            'bottle': (255, 165, 0)   # オレンジ
+        }
+        
+        # クラスIDとクラス名の対応
+        self.class_names = {
+            0: 'person',
+            56: 'chair',
+            41: 'cup',
+            39: 'bottle'
+        }
+        
         self.image_pub = self.create_publisher(
             Image, 
             '/yolo_detected_with_depth', 
@@ -23,13 +39,13 @@ class YoloDetector(Node):
         
         self.image_sub = self.create_subscription(
             Image,
-            '/camera/camera/color/image_raw',
+            '/kit_HappyMimi/camera/color/image_raw',
             self.color_callback,
             10)
             
         self.depth_sub = self.create_subscription(
             Image,
-            "/camera/camera/aligned_depth_to_color/image_raw",
+            "/kit_HappyMimi/camera/aligned_depth_to_color/image_raw",
             self.depth_callback,
             10
         )
@@ -51,77 +67,118 @@ class YoloDetector(Node):
         except CvBridgeError as e:
             self.get_logger().error(f'Error processing color image: {str(e)}')
 
+    def get_depth_from_bbox(self, bbox, depth_image, height, width):
+        """
+        バウンディングボックス内の深度値を解析する補助関数
+        """
+        x1, y1, x2, y2 = bbox
+        x1, y1 = max(0, int(x1)), max(0, int(y1))
+        x2, y2 = min(width - 1, int(x2)), min(height - 1, int(y2))
+        
+        box_width = x2 - x1
+        box_height = y2 - y1
+        
+        # ボックスサイズに応じてサンプリング数を調整
+        if box_width < 100 or box_height < 100:
+            divisions = 3
+        else:
+            divisions = 5
+
+        depth_values = []
+        
+        # グリッドサンプリング
+        for y in np.linspace(y1, y2, divisions):
+            for x in np.linspace(x1, x2, divisions):
+                y_idx = int(y)
+                x_idx = int(x)
+                if 0 <= y_idx < height and 0 <= x_idx < width:
+                    depth_value = depth_image[y_idx, x_idx]
+                    if depth_value > 0:  # 有効な深度値のみを追加
+                        depth_values.append(depth_value)
+        
+        if not depth_values:
+            return None
+            
+        # ヒストグラムによる深度値の解析
+        hist, bins = np.histogram(depth_values, bins=20)
+        most_common_depth = bins[np.argmax(hist)]
+        
+        # 信頼度スコアの計算
+        confidence_score = len(depth_values) / (divisions * divisions)
+        
+        return most_common_depth / 1000.0, confidence_score  # メートルに変換
+
     def process_images(self):
         if self.depth_image is None or self.color_image is None:
             return
 
         try:
-            # 作業用の画像をコピー
             output_image = self.color_image.copy()
             height, width = self.depth_image.shape[:2]
+            
+            # 検出結果を格納するリスト
+            detected_objects = []
 
-            # YOLOで物体検出
             results = self.model(output_image)
             
-            # 検出結果を処理
             for result in results[0].boxes:
-                # バウンディングボックスの座標を取得
-                box = result.xyxy[0].cpu().numpy()  # x1, y1, x2, y2
-                conf = result.conf[0].cpu().numpy()  # 信頼度
-                cls = int(result.cls[0].cpu().numpy())  # クラスID
+                box = result.xyxy[0].cpu().numpy()
+                conf = result.conf[0].cpu().numpy()
+                cls = int(result.cls[0].cpu().numpy())
                 
-                # バウンディングボックスの中心座標を計算
-                center_x = int((box[0] + box[2]) / 2)
-                center_y = int((box[1] + box[3]) / 2)
-
-                x1 = max(0, int(box[0]))
-                y1 = max(0, int(box[1]))
-                x2 = min(width - 1, int(box[2]))
-                y2 = min(height - 1, int(box[3]))
-
-                lins_x = np.linspace(x1, x2, 5) # 範囲を10分割
-                lins_y = np.linspace(y1, y2, 5)
-
-                min_depth_value = float('inf')  # 初期値を無限大に設定
-
-                for y in lins_y:
-                    for x in lins_x:
-                        y_idx = int(y)
-                        x_idx = int(x)
-                        cv2.circle(output_image,(x_idx,y_idx),5,(255,255,255),-1)
-                        if 0 <= y_idx < height and 0 <= x_idx < width:  # 範囲チェック
-                            depth_value = self.depth_image[y_idx, x_idx]
-                            if depth_value > 0:  # 有効な深度値のみを考慮
-                                min_depth_value = min(min_depth_value, depth_value)
-                    min_depth_value = min_depth_value / 1000.0  # mmをmに変換
+                if cls not in self.class_names:
+                    continue
+                
+                # 深度値と信頼度スコアの取得
+                depth_result = self.get_depth_from_bbox(box, self.depth_image, height, width)
+                if depth_result is None:
+                    continue
                     
-                    # バウンディングボックスを描画
-                    cv2.rectangle(output_image, 
-                                (int(box[0]), int(box[1])), 
-                                (int(box[2]), int(box[3])), 
-                                (0, 255, 0), 2)
-                    
-                    # 中心点を描画
-                    cv2.circle(output_image, (center_x, center_y), 5, (0, 0, 255), -1)
-                    
-                    # クラス名、信頼度、距離を表示
-                    label = f"Class:{cls} Conf:{conf:.2f} Depth:{min_depth_value:.2f}m"
-                    cv2.putText(output_image, label,
-                              (int(box[0]), int(box[1] - 10)),
-                              cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 1)
-                    
-                    # ログに出力
-                    self.get_logger().info(
-                        f'Object detected - Class: {cls}, Position: ({center_x}, {center_y}), '
-                        f'Depth: {min_depth_value:.2f}m, Confidence: {conf:.2f}'
-                    )
+                depth_value, confidence_score = depth_result
+                
+                # 信頼度スコアが低い場合はスキップ
+                if confidence_score < 0.5:
+                    continue
 
-            # 処理した画像をパブリッシュ
+                x1, y1, x2, y2 = map(int, box[:4])
+                center_x = int((x1 + x2) / 2)
+                center_y = int((y1 + y2) / 2)
+                
+                class_name = self.class_names[cls]
+                color = self.class_colors[class_name]
+
+                # 描画処理
+                cv2.rectangle(output_image, 
+                            (x1, y1), 
+                            (x2, y2), 
+                            color, 2)
+                
+                cv2.circle(output_image, (center_x, center_y), 5, color, -1)
+                
+                label = f"{class_name} Conf:{conf:.2f} Depth:{depth_value:.2f}m"
+                cv2.putText(output_image, label,
+                        (x1, y1 - 10),
+                        cv2.FONT_HERSHEY_PLAIN, 1, color, 1)
+                
+                # 検出結果をリストに追加
+                detected_objects.append([class_name, depth_value, confidence_score])
+
+            # 奥行きでソート
+            detected_objects.sort(key=lambda x: x[1])
+            
+            # ターミナルに表示
+            self.get_logger().info("\nDetected objects (sorted by depth):")
+            self.get_logger().info("--------------------------------")
+            for obj in detected_objects:
+                self.get_logger().info(f"Class: {obj[0]}, Depth: {obj[1]:.2f}m, Confidence: {obj[2]:.2f}")
+            self.get_logger().info("--------------------------------")
+
+            # 結果の公開
             ros_image = self.bridge.cv2_to_imgmsg(output_image, "bgr8")
             ros_image.header = self.latest_header
             self.image_pub.publish(ros_image)
             
-            # 処理が完了したらイメージをクリア
+            # 画像バッファのクリア
             self.depth_image = None
             self.color_image = None
             
