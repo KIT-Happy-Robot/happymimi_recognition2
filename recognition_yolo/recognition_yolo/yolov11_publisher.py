@@ -6,15 +6,19 @@ from cv_bridge import CvBridge, CvBridgeError
 from ultralytics import YOLO
 import cv2
 import numpy as np
+# カスタムメッセージとサービスのインポート
+from happymimi_recognition_msgs2.msg import DetectedObjects
+from happymimi_recognition_msgs2.srv import CheckObjects, CheckPosition, SelectPerson
 
 class YoloDetector(Node):
     def __init__(self):
         super().__init__('yolo_detector')
         
         self.bridge = CvBridge()
-        self.model = YOLO("yolo11n.pt")
+        self.model = YOLO("yolov8n.pt")
         self.depth_image = None
         self.color_image = None
+        self.latest_header = None
         
         # クラスごとの色を定義
         self.class_colors = {
@@ -32,11 +36,39 @@ class YoloDetector(Node):
             39: 'bottle'
         }
         
+        # 検出されたオブジェクトを保存するリスト
+        self.current_detections = []
+        # 人物検出結果を保存するリスト
+        self.detected_persons = []
+        
+        # パブリッシャーの設定
         self.image_pub = self.create_publisher(
             Image, 
             '/yolo_detected_with_depth', 
             10)
-        
+            
+        self.objects_pub = self.create_publisher(
+            DetectedObjects,
+            '/detected/detected_objects',
+            10)
+            
+        # サービスの設定
+        self.check_objects_srv = self.create_service(
+            CheckObjects,
+            '/detected/check_objects',
+            self.check_objects_callback)
+            
+        self.check_position_srv = self.create_service(
+            CheckPosition,
+            '/detected/check_position',
+            self.check_position_callback)
+            
+        self.select_person_srv = self.create_service(
+            SelectPerson,
+            '/detected/select_person',
+            self.select_person_callback)
+
+        # サブスクライバーの設定
         self.image_sub = self.create_subscription(
             Image,
             '/kit_HappyMimi/camera/color/image_raw',
@@ -108,6 +140,84 @@ class YoloDetector(Node):
         
         return most_common_depth / 1000.0, confidence_score  # メートルに変換
 
+    def check_objects_callback(self, request, response):
+        response.exists = any(obj[0] == request.object_name for obj in self.current_detections)
+        return response
+
+    def check_position_callback(self, request, response):
+        obj1_depth = None
+        obj2_depth = None
+        
+        # 各オブジェクトの深度を取得
+        for obj in self.current_detections:
+            if obj[0] == request.object1:
+                obj1_depth = obj[1]
+            if obj[0] == request.object2:
+                obj2_depth = obj[1]
+        
+        # 両方のオブジェクトが検出されていない場合
+        if obj1_depth is None or obj2_depth is None:
+            response.relative_position = "NO_OBJ"
+            return response
+        
+        # 深度差に基づいて位置関係を判定
+        depth_diff = obj1_depth - obj2_depth
+        if abs(depth_diff) < 0.3:  # 30cm以内なら同じ位置とみなす
+            response.relative_position = f"{request.object1} is at the same distance as {request.object2}"
+        elif depth_diff > 0:
+            response.relative_position = f"{request.object1} is behind {request.object2}"
+        else:
+            response.relative_position = f"{request.object1} is in front of {request.object2}"
+        
+        return response
+
+    def select_person_callback(self, request, response):
+        # 条件に合う人物のみをフィルタリング
+        filtered_persons = [
+            person for person in self.detected_persons
+            if person[2] <= request.max_distance  # 指定距離以内
+        ]
+        
+        # 右から左へソート（x座標の降順）
+        filtered_persons.sort(key=lambda x: x[0], reverse=True)
+        
+        # 応答の初期化
+        response.success = False
+        response.selected_person_depth = 0.0
+        response.x_center = 0
+        response.y_center = 0
+        
+        # 指定されたインデックスが有効かチェック
+        if 0 < request.person_index_from_right <= len(filtered_persons):
+            # インデックスは1始まりなので-1する
+            selected_person = filtered_persons[request.person_index_from_right - 1]
+            response.success = True
+            response.selected_person_depth = selected_person[2]  # depth
+            response.x_center = selected_person[0]  # x_center
+            response.y_center = selected_person[1]  # y_center
+            
+            # ログ出力
+            self.get_logger().info(
+                f"Selected person: right_index={request.person_index_from_right}, "
+                f"depth={response.selected_person_depth:.2f}m, "
+                f"position=({response.x_center}, {response.y_center})"
+            )
+        else:
+            self.get_logger().warn(
+                f"No person found matching criteria: "
+                f"index={request.person_index_from_right}, "
+                f"max_distance={request.max_distance}m"
+            )
+        
+        return response
+
+    def publish_detected_objects(self):
+        msg = DetectedObjects()
+        msg.object_names = [obj[0] for obj in self.current_detections]
+        msg.depths = [obj[1] for obj in self.current_detections]
+        msg.confidences = [obj[2] for obj in self.current_detections]
+        self.objects_pub.publish(msg)
+
     def process_images(self):
         if self.depth_image is None or self.color_image is None:
             return
@@ -116,8 +226,9 @@ class YoloDetector(Node):
             output_image = self.color_image.copy()
             height, width = self.depth_image.shape[:2]
             
-            # 検出結果を格納するリスト
-            detected_objects = []
+            # 検出結果を格納するリストをクリア
+            self.current_detections = []
+            self.detected_persons = []
 
             results = self.model(output_image)
             
@@ -147,6 +258,12 @@ class YoloDetector(Node):
                 class_name = self.class_names[cls]
                 color = self.class_colors[class_name]
 
+                # 人物の場合、専用リストにも追加
+                if class_name == 'person':
+                    self.detected_persons.append(
+                        (center_x, center_y, depth_value, (x1, y1, x2, y2))
+                    )
+
                 # 描画処理
                 cv2.rectangle(output_image, 
                             (x1, y1), 
@@ -161,19 +278,22 @@ class YoloDetector(Node):
                         cv2.FONT_HERSHEY_PLAIN, 1, color, 1)
                 
                 # 検出結果をリストに追加
-                detected_objects.append([class_name, depth_value, confidence_score])
+                self.current_detections.append([class_name, depth_value, confidence_score])
 
-            # 奥行きでソート
-            detected_objects.sort(key=lambda x: x[1])
-            
-            # ターミナルに表示
-            self.get_logger().info("\nDetected objects (sorted by depth):")
-            self.get_logger().info("--------------------------------")
-            for obj in detected_objects:
-                self.get_logger().info(f"Class: {obj[0]}, Depth: {obj[1]:.2f}m, Confidence: {obj[2]:.2f}")
-            self.get_logger().info("--------------------------------")
+            # 検出結果の公開
+            self.publish_detected_objects()
 
-            # 結果の公開
+            # 人物検出結果のデバッグ出力
+            if self.detected_persons:
+                self.get_logger().info(f"\nDetected {len(self.detected_persons)} persons:")
+                for i, person in enumerate(sorted(self.detected_persons, key=lambda x: x[0], reverse=True)):
+                    self.get_logger().info(
+                        f"Person {i+1} from right: "
+                        f"depth={person[2]:.2f}m, "
+                        f"position=({person[0]}, {person[1]})"
+                    )
+
+            # 画像の公開
             ros_image = self.bridge.cv2_to_imgmsg(output_image, "bgr8")
             ros_image.header = self.latest_header
             self.image_pub.publish(ros_image)
