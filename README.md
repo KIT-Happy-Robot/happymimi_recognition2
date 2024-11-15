@@ -1,6 +1,9 @@
 # happymimi_recognition2
 認識処理のプログラムや、それに付随するプログラム関係をまとめたメタパッケージ
 
+# 注意
+このパッケージを利用するには、realsense2_cameraパッケージが必要です。realsense2_cameraパッケージを使うときは `depth_align`を`true`にする必要があります。該当パッケージのローンチファイルに行き、sudo権限でtrueにして保存してください。
+
 ## Description
 以下のパッケージを含みます。
 - ### [recognition_processing](./recognition_processing)
@@ -27,6 +30,13 @@
     - etc..
 
 以上、認識系モジュールを扱うパッケージとなっています。  
+
+- ### [recognition_yolo](./recognition_yolo)
+    > YOLOv11(2024/11/5)を使って位置関係を把握したり、物体があるかどうかを判定したりするパッケージ
+
+    このパッケージでできること
+    - YOLOv11を使ってリアルタイムに解析ができる
+    - 物体の（ほぼ）正確な位置関係を取得することができる。
 
 ## Requirement
 ※あまり気にしなくていいと思います
@@ -64,3 +74,5 @@ $ ros2 launch three_dimensional_data_processing three_dimensional_data_processin
 - 人の身長や服の色などの特徴を取得したい 👉 [person_feature_extraction](./person_feature_extraction)
 - (開発向け)物体の三次元位置を知りたい 👉 [three_dimensional_data_processingの Position Estimator モジュール]()
 - (Advanced)認識から把持の一連のタスクを行いたい 👉 [happymimi_manipulation](https://github.com/KIT-Happy-Robot/happymimi_manipulation2)
+
+
